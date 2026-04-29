@@ -10,6 +10,7 @@ struct duk_internal_thread_state {
 	duk_ljstate lj;
 	duk_bool_t creating_error;
 	duk_hthread *curr_thread;
+	duk_uint8_t thread_state;
 	duk_int_t call_recursion_depth;
 };
 
@@ -84,7 +85,7 @@ DUK_EXTERNAL void duk_suspend(duk_hthread *thr, duk_thread_state *state) {
 
 	DUK_ASSERT_API_ENTRY(thr);
 	DUK_ASSERT(thr->heap != NULL);
-	DUK_ASSERT(state != NULL);  /* unvalidated */
+	DUK_ASSERT(state != NULL); /* unvalidated */
 
 	/* Currently not supported when called from within a finalizer.
 	 * If that is done, the finalizer will remain running indefinitely,
@@ -108,6 +109,7 @@ DUK_EXTERNAL void duk_suspend(duk_hthread *thr, duk_thread_state *state) {
 	duk_memcpy((void *) &snapshot->lj, (const void *) lj, sizeof(duk_ljstate));
 	snapshot->creating_error = heap->creating_error;
 	snapshot->curr_thread = heap->curr_thread;
+	snapshot->thread_state = thr->state;
 	snapshot->call_recursion_depth = heap->call_recursion_depth;
 
 	lj->jmpbuf_ptr = NULL;
@@ -117,6 +119,8 @@ DUK_EXTERNAL void duk_suspend(duk_hthread *thr, duk_thread_state *state) {
 	heap->creating_error = 0;
 	heap->curr_thread = NULL;
 	heap->call_recursion_depth = 0;
+
+	thr->state = DUK_HTHREAD_STATE_INACTIVE;
 }
 
 DUK_EXTERNAL void duk_resume(duk_hthread *thr, const duk_thread_state *state) {
@@ -125,13 +129,15 @@ DUK_EXTERNAL void duk_resume(duk_hthread *thr, const duk_thread_state *state) {
 
 	DUK_ASSERT_API_ENTRY(thr);
 	DUK_ASSERT(thr->heap != NULL);
-	DUK_ASSERT(state != NULL);  /* unvalidated */
+	DUK_ASSERT(state != NULL); /* unvalidated */
 
 	/* Shouldn't be necessary if duk_suspend() is called before
 	 * duk_resume(), but assert in case API sequence is incorrect.
 	 */
 	DUK_ASSERT(thr->heap->pf_prevent_count == 0);
 	DUK_ASSERT(thr->heap->creating_error == 0);
+
+	thr->state = snapshot->thread_state;
 
 	heap = thr->heap;
 
@@ -165,7 +171,7 @@ DUK_EXTERNAL void duk_set_global_object(duk_hthread *thr) {
 	DUK_UNREF(h_prev_glob);
 	thr->builtins[DUK_BIDX_GLOBAL] = h_glob;
 	DUK_HOBJECT_INCREF(thr, h_glob);
-	DUK_HOBJECT_DECREF_ALLOWNULL(thr, h_prev_glob);  /* side effects, in theory (referenced by global env) */
+	DUK_HOBJECT_DECREF_ALLOWNULL(thr, h_prev_glob); /* side effects, in theory (referenced by global env) */
 
 	/*
 	 *  Replace lexical environment for global scope
@@ -176,9 +182,7 @@ DUK_EXTERNAL void duk_set_global_object(duk_hthread *thr) {
 	 *  same (initial) built-ins.
 	 */
 
-	h_env = duk_hobjenv_alloc(thr,
-	                          DUK_HOBJECT_FLAG_EXTENSIBLE |
-	                          DUK_HOBJECT_CLASS_AS_FLAGS(DUK_HOBJECT_CLASS_OBJENV));
+	h_env = duk_hobjenv_alloc(thr, DUK_HOBJECT_FLAG_EXTENSIBLE | DUK_HOBJECT_CLASS_AS_FLAGS(DUK_HOBJECT_CLASS_OBJENV));
 	DUK_ASSERT(h_env != NULL);
 	DUK_ASSERT(DUK_HOBJECT_GET_PROTOTYPE(thr->heap, (duk_hobject *) h_env) == NULL);
 
@@ -193,8 +197,8 @@ DUK_EXTERNAL void duk_set_global_object(duk_hthread *thr) {
 	h_prev_env = thr->builtins[DUK_BIDX_GLOBAL_ENV];
 	thr->builtins[DUK_BIDX_GLOBAL_ENV] = (duk_hobject *) h_env;
 	DUK_HOBJECT_INCREF(thr, (duk_hobject *) h_env);
-	DUK_HOBJECT_DECREF_ALLOWNULL(thr, h_prev_env);  /* side effects */
-	DUK_UNREF(h_env);  /* without refcounts */
+	DUK_HOBJECT_DECREF_ALLOWNULL(thr, h_prev_env); /* side effects */
+	DUK_UNREF(h_env); /* without refcounts */
 	DUK_UNREF(h_prev_env);
 
 	/* [ ... new_glob ] */

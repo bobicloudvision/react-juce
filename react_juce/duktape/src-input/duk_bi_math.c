@@ -53,7 +53,7 @@ DUK_LOCAL double duk__fmin_fixed(double x, double y) {
 	/* fmin() with args -0 and +0 is not guaranteed to return
 	 * -0 as ECMAScript requires.
 	 */
-	if (x == 0 && y == 0) {
+	if (duk_double_equals(x, 0.0) && duk_double_equals(y, 0.0)) {
 		duk_double_union du1, du2;
 		du1.d = x;
 		du2.d = y;
@@ -80,7 +80,7 @@ DUK_LOCAL double duk__fmax_fixed(double x, double y) {
 	/* fmax() with args -0 and +0 is not guaranteed to return
 	 * +0 as ECMAScript requires.
 	 */
-	if (x == 0 && y == 0) {
+	if (duk_double_equals(x, 0.0) && duk_double_equals(y, 0.0)) {
 		if (DUK_SIGNBIT(x) == 0 || DUK_SIGNBIT(y) == 0) {
 			return +0.0;
 		} else {
@@ -141,7 +141,7 @@ DUK_LOCAL double duk__trunc(double x) {
 	return x >= 0.0 ? DUK_FLOOR(x) : DUK_CEIL(x);
 #endif
 }
-#endif  /* DUK_USE_ES6 */
+#endif /* DUK_USE_ES6 */
 
 DUK_LOCAL double duk__round_fixed(double x) {
 	/* Numbers half-way between integers must be rounded towards +Infinity,
@@ -247,59 +247,32 @@ DUK_LOCAL double duk__atan2_fixed(double x, double y) {
 	}
 #else
 	/* Some ISO C assumptions. */
-	DUK_ASSERT(DUK_ATAN2(DUK_DOUBLE_INFINITY, DUK_DOUBLE_INFINITY) == 0.7853981633974483);
-	DUK_ASSERT(DUK_ATAN2(-DUK_DOUBLE_INFINITY, DUK_DOUBLE_INFINITY) == -0.7853981633974483);
-	DUK_ASSERT(DUK_ATAN2(DUK_DOUBLE_INFINITY, -DUK_DOUBLE_INFINITY) == 2.356194490192345);
-	DUK_ASSERT(DUK_ATAN2(-DUK_DOUBLE_INFINITY, -DUK_DOUBLE_INFINITY) == -2.356194490192345);
+
+	DUK_ASSERT(duk_double_equals(DUK_ATAN2(DUK_DOUBLE_INFINITY, DUK_DOUBLE_INFINITY), 0.7853981633974483));
+	DUK_ASSERT(duk_double_equals(DUK_ATAN2(-DUK_DOUBLE_INFINITY, DUK_DOUBLE_INFINITY), -0.7853981633974483));
+	DUK_ASSERT(duk_double_equals(DUK_ATAN2(DUK_DOUBLE_INFINITY, -DUK_DOUBLE_INFINITY), 2.356194490192345));
+	DUK_ASSERT(duk_double_equals(DUK_ATAN2(-DUK_DOUBLE_INFINITY, -DUK_DOUBLE_INFINITY), -2.356194490192345));
 #endif
 
 	return DUK_ATAN2(x, y);
 }
-#endif  /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
+#endif /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
 
 /* order must match constants in genbuiltins.py */
 DUK_LOCAL const duk__one_arg_func duk__one_arg_funcs[] = {
 #if defined(DUK_USE_AVOID_PLATFORM_FUNCPTRS)
-	duk__fabs,
-	duk__acos,
-	duk__asin,
-	duk__atan,
-	duk__ceil,
-	duk__cos,
-	duk__exp,
-	duk__floor,
-	duk__log,
-	duk__round_fixed,
-	duk__sin,
-	duk__sqrt,
-	duk__tan,
+	duk__fabs,  duk__acos, duk__asin,        duk__atan, duk__ceil, duk__cos, duk__exp,
+	duk__floor, duk__log,  duk__round_fixed, duk__sin,  duk__sqrt, duk__tan,
 #if defined(DUK_USE_ES6)
-	duk__cbrt,
-	duk__log2,
-	duk__log10,
-	duk__trunc
+	duk__cbrt,  duk__log2, duk__log10,       duk__trunc
 #endif
-#else  /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
-	DUK_FABS,
-	DUK_ACOS,
-	DUK_ASIN,
-	DUK_ATAN,
-	DUK_CEIL,
-	DUK_COS,
-	DUK_EXP,
-	DUK_FLOOR,
-	DUK_LOG,
-	duk__round_fixed,
-	DUK_SIN,
-	DUK_SQRT,
-	DUK_TAN,
+#else /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
+	DUK_FABS,  DUK_ACOS,  DUK_ASIN,         DUK_ATAN,  DUK_CEIL, DUK_COS, DUK_EXP,
+	DUK_FLOOR, DUK_LOG,   duk__round_fixed, DUK_SIN,   DUK_SQRT, DUK_TAN,
 #if defined(DUK_USE_ES6)
-	duk__cbrt,
-	duk__log2,
-	duk__log10,
-	duk__trunc
+	duk__cbrt, duk__log2, duk__log10,       duk__trunc
 #endif
-#endif  /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
+#endif /* DUK_USE_AVOID_PLATFORM_FUNCPTRS */
 };
 
 /* order must match constants in genbuiltins.py */
@@ -334,7 +307,7 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_twoarg_shared(duk_hthread *thr) {
 
 	DUK_ASSERT(fun_idx >= 0);
 	DUK_ASSERT(fun_idx < (duk_small_int_t) (sizeof(duk__two_arg_funcs) / sizeof(duk__two_arg_func)));
-	arg1 = duk_to_number(thr, 0);  /* explicit ordered evaluation to match coercion semantics */
+	arg1 = duk_to_number(thr, 0); /* explicit ordered evaluation to match coercion semantics */
 	arg2 = duk_to_number(thr, 1);
 	fun = duk__two_arg_funcs[fun_idx];
 	duk_push_number(thr, (duk_double_t) fun((double) arg1, (double) arg2));
@@ -350,7 +323,7 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_min(duk_hthread *thr) {
 }
 
 DUK_INTERNAL duk_ret_t duk_bi_math_object_random(duk_hthread *thr) {
-	duk_push_number(thr, (duk_double_t) DUK_UTIL_GET_RANDOM_DOUBLE(thr));
+	duk_push_number(thr, (duk_double_t) duk_util_get_random_double(thr));
 	return 1;
 }
 
@@ -390,13 +363,13 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_hypot(duk_hthread *thr) {
 	}
 
 	/* Early return cases. */
-	if (max == DUK_DOUBLE_INFINITY) {
+	if (duk_double_equals(max, DUK_DOUBLE_INFINITY)) {
 		duk_push_number(thr, DUK_DOUBLE_INFINITY);
 		return 1;
 	} else if (found_nan) {
 		duk_push_number(thr, DUK_DOUBLE_NAN);
 		return 1;
-	} else if (max == 0.0) {
+	} else if (duk_double_equals(max, 0.0)) {
 		duk_push_number(thr, 0.0);
 		/* Otherwise we'd divide by zero. */
 		return 1;
@@ -420,7 +393,7 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_hypot(duk_hthread *thr) {
 	duk_push_number(thr, (duk_double_t) DUK_SQRT(sum) * max);
 	return 1;
 }
-#endif  /* DUK_USE_ES6 */
+#endif /* DUK_USE_ES6 */
 
 #if defined(DUK_USE_ES6)
 DUK_INTERNAL duk_ret_t duk_bi_math_object_sign(duk_hthread *thr) {
@@ -429,16 +402,16 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_sign(duk_hthread *thr) {
 	d = duk_to_number(thr, 0);
 	if (duk_double_is_nan(d)) {
 		DUK_ASSERT(duk_is_nan(thr, -1));
-		return 1;  /* NaN input -> return NaN */
+		return 1; /* NaN input -> return NaN */
 	}
-	if (d == 0.0) {
+	if (duk_double_equals(d, 0.0)) {
 		/* Zero sign kept, i.e. -0 -> -0, +0 -> +0. */
 		return 1;
 	}
 	duk_push_int(thr, (d > 0.0 ? 1 : -1));
 	return 1;
 }
-#endif  /* DUK_USE_ES6 */
+#endif /* DUK_USE_ES6 */
 
 #if defined(DUK_USE_ES6)
 DUK_INTERNAL duk_ret_t duk_bi_math_object_clz32(duk_hthread *thr) {
@@ -458,7 +431,7 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_clz32(duk_hthread *thr) {
 	DUK_ASSERT(i <= 32);
 	duk_push_uint(thr, i);
 	return 1;
-#else  /* DUK_USE_PREFER_SIZE */
+#else /* DUK_USE_PREFER_SIZE */
 	i = 0;
 	x = duk_to_uint32(thr, 0);
 	if (x & 0xffff0000UL) {
@@ -494,9 +467,9 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_clz32(duk_hthread *thr) {
 	DUK_ASSERT(i <= 32);
 	duk_push_uint(thr, i);
 	return 1;
-#endif  /* DUK_USE_PREFER_SIZE */
+#endif /* DUK_USE_PREFER_SIZE */
 }
-#endif  /* DUK_USE_ES6 */
+#endif /* DUK_USE_ES6 */
 
 #if defined(DUK_USE_ES6)
 DUK_INTERNAL duk_ret_t duk_bi_math_object_imul(duk_hthread *thr) {
@@ -513,6 +486,6 @@ DUK_INTERNAL duk_ret_t duk_bi_math_object_imul(duk_hthread *thr) {
 	duk_push_i32(thr, (duk_int32_t) z);
 	return 1;
 }
-#endif  /* DUK_USE_ES6 */
+#endif /* DUK_USE_ES6 */
 
-#endif  /* DUK_USE_MATH_BUILTIN */
+#endif /* DUK_USE_MATH_BUILTIN */
