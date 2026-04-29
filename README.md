@@ -47,7 +47,7 @@ love to showcase your work.
 
 ## Build (GainPlugin)
 
-From the repo root, with CMake 3.15+ and a C++17 toolchain: `npm install` then `npm run build` configures `build/`, compiles the `examples/GainPlugin/jsui` bundle (webpack uses Node’s OpenSSL legacy provider for compatibility), and builds the plugin targets. Use `npm run build:gainplugin` if the build directory is already configured. On macOS, `./build-mac.sh` runs the same Release flow.
+After clone, run `git submodule update --init --recursive` (JUCE, Yoga, Hermes, **Duktape**). From the repo root, with CMake 3.15+ and a C++17 toolchain: `npm install` then `npm run build` configures `build/`, compiles the `examples/GainPlugin/jsui` bundle (webpack uses Node’s OpenSSL legacy provider for compatibility), and builds the plugin targets. Use `npm run build:gainplugin` if the build directory is already configured. On macOS, `./build-mac.sh` runs the same Release flow.
 
 ## Contributing
 

@@ -15,6 +15,13 @@ add_subdirectory(ext/juce)
 # Adding any custom modules you might have:
 juce_add_module(react_juce)
 
+# Duktape extras/examples live in the submodule tree; amalgamation is under react_juce/duktape/src-noline/.
+target_include_directories(
+    react_juce
+    INTERFACE
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/react_juce/third_party/duktape>"
+)
+
 # Setup the JS engine/interpreter to use.
 if (REACTJUCE_JS_LIBRARY STREQUAL "HERMES")
     add_subdirectory(react_juce/hermes)

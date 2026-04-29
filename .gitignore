@@ -10,6 +10,7 @@
 .cache/
 
 build
+.duktape-venv
 examples/TestRunner/Builds
 examples/**/build
 

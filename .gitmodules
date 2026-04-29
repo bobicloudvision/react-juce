@@ -7,3 +7,7 @@
 [submodule "react_juce/hermes"]
 	path = react_juce/hermes
 	url = https://github.com/facebook/hermes.git
+[submodule "react_juce/third_party/duktape"]
+	path = react_juce/third_party/duktape
+	url = https://github.com/svaarala/duktape.git
+	shallow = true
