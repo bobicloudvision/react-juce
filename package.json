@@ -18,7 +18,8 @@
     "beautify": "prettier --write .",
     "lint": "prettier --check .",
     "configure": "cmake -B build -S . -DCMAKE_BUILD_TYPE=Release",
-    "build:jsui": "npm --prefix examples/GainPlugin/jsui install && npm --prefix examples/GainPlugin/jsui run build",
+    "build:react-juce": "npm --prefix packages/react-juce run build",
+    "build:jsui": "npm run build:react-juce && npm --prefix examples/GainPlugin/jsui install && npm --prefix examples/GainPlugin/jsui run build",
     "build:native": "cmake --build build --parallel",
     "build:gainplugin": "npm run build:jsui && npm run build:native",
     "build": "npm run configure && npm run build:gainplugin"

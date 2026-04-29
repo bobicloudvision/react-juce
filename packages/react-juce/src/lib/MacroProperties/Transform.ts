@@ -17,7 +17,7 @@ const toRadians = (arg: string) => {
   // @ts-ignore
   let [, angle, unit] = angleUnitMatcher.exec(arg);
   let angleFloat = parseFloat(angle);
-  if (angleFloat === NaN) return NaN;
+  if (Number.isNaN(angleFloat)) return NaN;
   if (unit === "" && angleFloat !== 0) return NaN;
   angleFloat *= rotateMultipliers[unit] || 1;
   return angleFloat;

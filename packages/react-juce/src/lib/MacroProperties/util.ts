@@ -16,7 +16,7 @@ export const getMacroCalls = (s: string): TMacroCall[] => {
   if (!matches) return [];
   // unset "g" flag, otherwise r.exec returns null when multiple matches occurred
   r = new RegExp(macroMatcher);
-  const macroCalls = [];
+  const macroCalls: TMacroCall[] = [];
   for (const match of matches) {
     // @ts-ignore
     const [, macro, args] = r.exec(match);

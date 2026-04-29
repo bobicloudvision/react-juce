@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, ReactNode } from "react";
 import Colors from "../lib/MacroProperties/Colors";
 
 // TODO: Need to explicitly bind this to members?
@@ -192,6 +192,7 @@ export class CanvasRenderingContext {
 }
 
 export interface CanvasProps {
+  children?: ReactNode;
   onDraw: (ctx: CanvasRenderingContext) => void;
   onMeasure?: (e: any) => void;
   stateful?: boolean;

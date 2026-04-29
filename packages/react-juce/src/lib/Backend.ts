@@ -308,4 +308,22 @@ export default {
     //@ts-ignore
     return NativeMethods.resetAfterCommit();
   },
+
+  clearContainer(container: ViewInstance) {
+    const deepRemoveFromParent = (parent: ViewInstance, child: Instance) => {
+      if (child instanceof ViewInstance) {
+        while (child._children.length > 0) {
+          deepRemoveFromParent(
+            child,
+            child._children[child._children.length - 1]
+          );
+        }
+      }
+      parent.removeChild(child);
+    };
+
+    while (container._children.length > 0) {
+      deepRemoveFromParent(container, container._children[0]);
+    }
+  },
 };

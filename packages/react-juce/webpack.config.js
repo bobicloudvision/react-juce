@@ -29,16 +29,7 @@ module.exports = (env) => {
         {
           test: /\.tsx?$/,
           exclude: path.resolve(__dirname, "node_modules"),
-          use: [
-            {
-              loader: "awesome-typescript-loader",
-              options: {
-                useBabel: true,
-                babelCore: "@babel/core",
-                declarationDir: path.resolve(__dirname, "dist"),
-              },
-            },
-          ],
+          use: ["babel-loader"],
         },
         {
           test: /\.js$/,
@@ -46,15 +37,7 @@ module.exports = (env) => {
             path.resolve(__dirname, "node_modules", "matrix-js"),
             path.resolve(__dirname, "node_modules", "camelcase"),
           ],
-          use: [
-            {
-              loader: "awesome-typescript-loader",
-              options: {
-                useBabel: true,
-                babelCore: "@babel/core",
-              },
-            },
-          ],
+          use: ["babel-loader"],
         },
         {
           test: /\.svg$/,

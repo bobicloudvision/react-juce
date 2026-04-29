@@ -1,5 +1,6 @@
 import MethodTracer from "./MethodTracer";
 import ReactReconciler from "react-reconciler";
+import { DefaultEventPriority } from "react-reconciler/constants";
 import Backend, { ViewInstance, RawTextViewInstance } from "./Backend";
 
 import invariant from "invariant";
@@ -7,6 +8,14 @@ import invariant from "invariant";
 type HostContext = {
   isInTextParent: boolean;
 };
+
+function throwUnsupported(feature: string) {
+  return (..._args: unknown[]) => {
+    throw new Error(
+      `React-JUCE does not support ${feature}. If this surfaces during normal rendering, file an issue.`
+    );
+  };
+}
 
 //TODO: This should really be types against ReactReconciler.HostConfig with the generics typed out.
 const HostConfig = {
@@ -43,9 +52,138 @@ const HostConfig = {
     return { isInTextParent };
   },
 
-  prepareForCommit: (...args: any) => {},
+  prepareForCommit() {
+    return null;
+  },
   resetAfterCommit: (...args: any) => {
     Backend.resetAfterCommit();
+  },
+
+  getPublicInstance(instance: ViewInstance | RawTextViewInstance) {
+    return instance;
+  },
+
+  scheduleTimeout: setTimeout,
+  cancelTimeout: clearTimeout,
+  noTimeout: -1,
+
+  isPrimaryRenderer: true,
+  warnsIfNotActing: true,
+
+  supportsPersistence: false,
+  cloneInstance: throwUnsupported("cloneInstance (persistence)"),
+  createContainerChildSet: throwUnsupported("createContainerChildSet"),
+  appendChildToContainerChildSet: throwUnsupported(
+    "appendChildToContainerChildSet"
+  ),
+  finalizeContainerChildren: throwUnsupported("finalizeContainerChildren"),
+  replaceContainerChildren: throwUnsupported("replaceContainerChildren"),
+  cloneHiddenInstance: throwUnsupported("cloneHiddenInstance"),
+  cloneHiddenTextInstance: throwUnsupported("cloneHiddenTextInstance"),
+
+  supportsHydration: false,
+  canHydrateInstance: throwUnsupported("canHydrateInstance"),
+  canHydrateTextInstance: throwUnsupported("canHydrateTextInstance"),
+  canHydrateSuspenseInstance: throwUnsupported("canHydrateSuspenseInstance"),
+  isSuspenseInstancePending: throwUnsupported("isSuspenseInstancePending"),
+  isSuspenseInstanceFallback: throwUnsupported("isSuspenseInstanceFallback"),
+  getSuspenseInstanceFallbackErrorDetails: throwUnsupported(
+    "getSuspenseInstanceFallbackErrorDetails"
+  ),
+  registerSuspenseInstanceRetry: throwUnsupported(
+    "registerSuspenseInstanceRetry"
+  ),
+  getNextHydratableSibling: throwUnsupported("getNextHydratableSibling"),
+  getFirstHydratableChild: throwUnsupported("getFirstHydratableChild"),
+  getFirstHydratableChildWithinContainer: throwUnsupported(
+    "getFirstHydratableChildWithinContainer"
+  ),
+  getFirstHydratableChildWithinSuspenseInstance: throwUnsupported(
+    "getFirstHydratableChildWithinSuspenseInstance"
+  ),
+  hydrateInstance: throwUnsupported("hydrateInstance"),
+  hydrateTextInstance: throwUnsupported("hydrateTextInstance"),
+  hydrateSuspenseInstance: throwUnsupported("hydrateSuspenseInstance"),
+  getNextHydratableInstanceAfterSuspenseInstance: throwUnsupported(
+    "getNextHydratableInstanceAfterSuspenseInstance"
+  ),
+  commitHydratedContainer: throwUnsupported("commitHydratedContainer"),
+  commitHydratedSuspenseInstance: throwUnsupported(
+    "commitHydratedSuspenseInstance"
+  ),
+  clearSuspenseBoundary: throwUnsupported("clearSuspenseBoundary"),
+  clearSuspenseBoundaryFromContainer: throwUnsupported(
+    "clearSuspenseBoundaryFromContainer"
+  ),
+  shouldDeleteUnhydratedTailInstances: throwUnsupported(
+    "shouldDeleteUnhydratedTailInstances"
+  ),
+  didNotMatchHydratedContainerTextInstance: throwUnsupported(
+    "didNotMatchHydratedContainerTextInstance"
+  ),
+  didNotMatchHydratedTextInstance: throwUnsupported(
+    "didNotMatchHydratedTextInstance"
+  ),
+  didNotHydrateInstanceWithinContainer: throwUnsupported(
+    "didNotHydrateInstanceWithinContainer"
+  ),
+  didNotHydrateInstanceWithinSuspenseInstance: throwUnsupported(
+    "didNotHydrateInstanceWithinSuspenseInstance"
+  ),
+  didNotHydrateInstance: throwUnsupported("didNotHydrateInstance"),
+  didNotFindHydratableInstanceWithinContainer: throwUnsupported(
+    "didNotFindHydratableInstanceWithinContainer"
+  ),
+  didNotFindHydratableTextInstanceWithinContainer: throwUnsupported(
+    "didNotFindHydratableTextInstanceWithinContainer"
+  ),
+  didNotFindHydratableSuspenseInstanceWithinContainer: throwUnsupported(
+    "didNotFindHydratableSuspenseInstanceWithinContainer"
+  ),
+  didNotFindHydratableInstanceWithinSuspenseInstance: throwUnsupported(
+    "didNotFindHydratableInstanceWithinSuspenseInstance"
+  ),
+  didNotFindHydratableTextInstanceWithinSuspenseInstance: throwUnsupported(
+    "didNotFindHydratableTextInstanceWithinSuspenseInstance"
+  ),
+  didNotFindHydratableSuspenseInstanceWithinSuspenseInstance: throwUnsupported(
+    "didNotFindHydratableSuspenseInstanceWithinSuspenseInstance"
+  ),
+  didNotFindHydratableInstance: throwUnsupported("didNotFindHydratableInstance"),
+  didNotFindHydratableTextInstance: throwUnsupported(
+    "didNotFindHydratableTextInstance"
+  ),
+  didNotFindHydratableSuspenseInstance: throwUnsupported(
+    "didNotFindHydratableSuspenseInstance"
+  ),
+  errorHydratingContainer: throwUnsupported("errorHydratingContainer"),
+
+  supportsTestSelectors: false,
+  findFiberRoot: throwUnsupported("findFiberRoot"),
+  getBoundingRect: throwUnsupported("getBoundingRect"),
+  getTextContent: throwUnsupported("getTextContent"),
+  isHiddenSubtree: throwUnsupported("isHiddenSubtree"),
+  matchAccessibilityRole: throwUnsupported("matchAccessibilityRole"),
+  setFocusIfFocusable: throwUnsupported("setFocusIfFocusable"),
+  setupIntersectionObserver: throwUnsupported("setupIntersectionObserver"),
+
+  supportsMicrotasks: false,
+  scheduleMicrotask: throwUnsupported("scheduleMicrotask"),
+
+  prepareScopeUpdate: throwUnsupported("prepareScopeUpdate"),
+  getInstanceFromScope: throwUnsupported("getInstanceFromScope"),
+
+  getInstanceFromNode(_node: unknown) {
+    return null;
+  },
+
+  beforeActiveInstanceBlur() {},
+  afterActiveInstanceBlur() {},
+  preparePortalMount() {},
+  detachDeletedInstance() {},
+
+  getCurrentEventPriority() {
+    return DefaultEventPriority;
   },
 
   /** Called to determine whether or not a new text value can be set on an
@@ -112,13 +250,15 @@ const HostConfig = {
     instance: ViewInstance,
     elementType: string,
     props: any,
-    rootContainerInstance: ViewInstance
-  ): void {
+    rootContainerInstance: ViewInstance,
+    _hostContext: HostContext
+  ): boolean {
     Object.keys(props).forEach(function (propKey) {
       if (propKey !== "children") {
         instance.setProperty(propKey, props[propKey]);
       }
     });
+    return false;
   },
 
   /** During a state change, this method will be called to identify the set of
@@ -179,13 +319,11 @@ const HostConfig = {
     }
   },
 
-  /** TODO
-   */
   commitMount(
-    instance: ViewInstance,
-    type: string,
-    newProps: any,
-    internalInstanceHandle: any
+    _instance: ViewInstance,
+    _type: string,
+    _newProps: any,
+    _internalInstanceHandle: any
   ): void {
     // Noop
   },
@@ -234,6 +372,40 @@ const HostConfig = {
     child: ViewInstance
   ): void {
     parentContainer.removeChild(child);
+  },
+
+  insertInContainerBefore(
+    container: ViewInstance,
+    child: ViewInstance,
+    beforeChild: ViewInstance
+  ): void {
+    const index = container.getChildIndex(beforeChild);
+
+    if (index < 0)
+      throw new Error(
+        "Failed to find child instance for insertInContainerBefore operation."
+      );
+
+    container.insertChild(child, index);
+  },
+
+  resetTextContent(_instance: ViewInstance) {},
+
+  hideInstance(instance: ViewInstance) {
+    instance.setProperty("opacity", "00ffffff");
+  },
+
+  hideTextInstance(_textInstance: RawTextViewInstance) {},
+
+  unhideInstance(instance: ViewInstance, props: any) {
+    const o = props["opacity"];
+    instance.setProperty("opacity", o !== undefined ? o : "ffffffff");
+  },
+
+  unhideTextInstance(_textInstance: RawTextViewInstance, _text: string) {},
+
+  clearContainer(container: ViewInstance) {
+    Backend.clearContainer(container);
   },
 };
 
