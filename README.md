@@ -45,9 +45,11 @@ React-JUCE is a young project, but already it provides the framework on which th
 Besides that, you can check out the example code in the `examples/` directory. If you have a project written with React-JUCE that you want to share, get in touch! I would
 love to showcase your work.
 
-## Build (GainPlugin)
+## Build (examples)
 
-After clone, run `git submodule update --init --recursive` (JUCE, Yoga, Hermes, Duktape). From the repo root, with CMake 3.15+ and a C++17 toolchain: `npm install` then `npm run build` configures `build/`, compiles the `examples/GainPlugin/jsui` bundle (webpack uses Node’s OpenSSL legacy provider for compatibility), and builds the plugin targets. Use `npm run build:gainplugin` if the build directory is already configured. On macOS, `./build-mac.sh` runs the same Release flow.
+After clone, run `git submodule update --init --recursive` (JUCE, Yoga, Hermes, Duktape). From the repo root, with CMake 3.15+ and a C++17 toolchain: `npm install` then `npm run build` configures `build/`, compiles the `examples/GainPlugin/jsui` bundle (webpack uses Node’s OpenSSL legacy provider for compatibility), and builds the plugin targets. Use `npm run build:gainplugin` if the build directory is already configured.
+
+**Playground** (`examples/PlaygroundPlugin`) is a second example that exercises most react-juce UI pieces (View, Image, Canvas, Button, Text, TextInput, Slider, ListView, ScrollView, EventBridge, parameters). Build its bundle with `npm run build:playground-jsui`, or bundle + all native targets with `npm run build:playground`. To build **both** example UIs in one go (single `react-juce` compile): `npm run build:examples-jsui`. On macOS, `./build-mac.sh` runs `configure`, `build:examples-jsui`, and `build:native` (Gain + Playground standalones and plugin formats).
 
 ## Contributing
 
