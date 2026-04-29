@@ -18,6 +18,17 @@ jobs:
         with:
           submodules: true
 
+      - name: Apply Yoga patches
+        shell: bash
+        run: |
+          PATCH="${GITHUB_WORKSPACE}/react_juce/patches/yoga-v1.19.0-warnings.patch"
+          if git apply --reverse --check "$PATCH" 2>/dev/null; then
+            : # already applied
+          elif ! git apply "$PATCH"; then
+            echo "Failed to apply $PATCH" >&2
+            exit 1
+          fi
+
       - name: Fetch juce dependencies
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev libfreetype6-dev libasound2-dev

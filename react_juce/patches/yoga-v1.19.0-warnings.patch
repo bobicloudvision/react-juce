@@ -1,0 +1,26 @@
+diff --git a/react_juce/yoga/yoga/Yoga.cpp b/react_juce/yoga/yoga/Yoga.cpp
+--- a/react_juce/yoga/yoga/Yoga.cpp
++++ b/react_juce/yoga/yoga/Yoga.cpp
+@@ -2228,7 +2228,7 @@ static float YGDistributeFreeSpaceSecondPass(
+         layoutContext,
+         depth,
+         generationCount);
+     node->setLayoutHadOverflow(
+-        node->getLayout().hadOverflow() |
++        node->getLayout().hadOverflow() ||
+         currentRelativeChild->getLayout().hadOverflow());
+   }
+   return deltaFreeSpace;
+diff --git a/react_juce/yoga/yoga/event/event.h b/react_juce/yoga/yoga/event/event.h
+--- a/react_juce/yoga/yoga/event/event.h
++++ b/react_juce/yoga/yoga/event/event.h
+@@ -89,6 +89,9 @@ struct YOGA_EXPORT Event {
+   static void publish(const YGNode& node, const TypedData<E>& eventData = {}) {
+ #ifdef YG_ENABLE_EVENTS
+     publish(node, E, Data{eventData});
++#else
++    (void)node;
++    (void)eventData;
+ #endif
+   }
+ 
