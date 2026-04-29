@@ -34,9 +34,12 @@ React-JUCE is a young project, but already it provides the framework on which th
 
 ![Creative Intent Remnant: Screenshot](https://github.com/nick-thompson/react-juce/blob/master/RemnantScreenShot.jpg)
 
-Besides that, you can check out the example code in the `examples/` directory. See the "Documentation" section
-below for building and running the demo plugin. If you have a project written with React-JUCE that you want to share, get in touch! I would
+Besides that, you can check out the example code in the `examples/` directory. If you have a project written with React-JUCE that you want to share, get in touch! I would
 love to showcase your work.
+
+## Build (GainPlugin)
+
+From the repo root, with CMake 3.15+ and a C++17 toolchain: `npm install` then `npm run build` configures `build/`, compiles the `examples/GainPlugin/jsui` bundle (webpack uses Node’s OpenSSL legacy provider for compatibility), and builds the plugin targets. Use `npm run build:gainplugin` if the build directory is already configured.
 
 ## Contributing
 

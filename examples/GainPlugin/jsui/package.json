@@ -21,7 +21,7 @@
     "webpack-cli": "^4.7.2"
   },
   "scripts": {
-    "start": "webpack -w --mode=development",
-    "build": "webpack --mode=production"
+    "start": "node --openssl-legacy-provider ./node_modules/webpack/bin/webpack.js -w --mode=development",
+    "build": "node --openssl-legacy-provider ./node_modules/webpack/bin/webpack.js --mode=production"
   }
 }
