@@ -555,21 +555,21 @@ static Image createNSWindowSnapshot (NSWindow* nsWindow)
 {
     JUCE_AUTORELEASEPOOL
     {
-        CGImageRef screenShot = CGWindowListCreateImage (CGRectNull,
-                                                         kCGWindowListOptionIncludingWindow,
-                                                         (CGWindowID) [nsWindow windowNumber],
-                                                         kCGWindowImageBoundsIgnoreFraming);
+        // CGWindowListCreateImage is unavailable when building against the macOS 15 SDK.
+        NSView* const view = [nsWindow contentView];
 
-        NSBitmapImageRep* bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage: screenShot];
+        if (view == nil)
+            return {};
+
+        const NSRect bounds = [view bounds];
+        NSBitmapImageRep* const bitmapRep = [view bitmapImageRepForCachingDisplayInRect: bounds];
+        [view cacheDisplayInRect: bounds toBitmapImageRep: bitmapRep];
 
         Image result (Image::ARGB, (int) [bitmapRep size].width, (int) [bitmapRep size].height, true);
 
         selectImageForDrawing (result);
         [bitmapRep drawAtPoint: NSMakePoint (0, 0)];
         releaseImageAfterDrawing();
-
-        [bitmapRep release];
-        CGImageRelease (screenShot);
 
         return result;
     }
