@@ -15,6 +15,32 @@ add_subdirectory(ext/juce)
 # Adding any custom modules you might have:
 juce_add_module(react_juce)
 
+# facebook/yoga (submodule) emits a few noisy warnings in our compile setup; keep upstream sources
+# untouched and suppress here instead of maintaining a local patch.
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
+    target_compile_options(
+        react_juce
+        INTERFACE
+        $<$<COMPILE_LANGUAGE:CXX>:-Wno-bitwise-instead-of-logical>
+        $<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-parameter>)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(
+        react_juce
+        INTERFACE
+        $<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-parameter>)
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10)
+        target_compile_options(
+            react_juce
+            INTERFACE
+            $<$<COMPILE_LANGUAGE:CXX>:-Wno-bitwise-instead-of-logical>)
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(
+        react_juce
+        INTERFACE
+        $<$<COMPILE_LANGUAGE:CXX>:/wd4100>)
+endif ()
+
 # Setup the JS engine/interpreter to use.
 if (REACTJUCE_JS_LIBRARY STREQUAL "HERMES")
     add_subdirectory(react_juce/hermes)

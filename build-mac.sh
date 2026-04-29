@@ -8,14 +8,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-PATCH="${ROOT}/react_juce/patches/yoga-v1.19.0-warnings.patch"
-if git apply --reverse --check "$PATCH" 2>/dev/null; then
-  :
-elif ! git apply "$PATCH"; then
-  echo "Failed to apply ${PATCH}" >&2
-  exit 1
-fi
-
 BUILD_TYPE=Release
 for arg in "$@"; do
   case "$arg" in
