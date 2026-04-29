@@ -20,8 +20,6 @@ to a 1.0 release.
 
 ## Resources
 
-- Documentation: [Docs & Getting Started](https://docs.react-juce.dev)
-- Discussions: [GitHub Discussions](https://github.com/nick-thompson/react-juce/discussions)
 - Community: [The Audio Programmer Discord Server](https://discord.gg/3H4wwVf49v)
   - Join the `#blueprint` channel and say hi!
 
