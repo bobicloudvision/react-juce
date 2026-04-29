@@ -284,12 +284,15 @@ export default function App() {
             </View>
 
             <Text {...styles.fieldLabel}>TEXT INPUT</Text>
-            <TextInput
-              value={inputValue}
-              onInput={(e) => setInputValue(e.value)}
-              placeholder="Placeholder…"
-              {...styles.input}
-            />
+            <View {...styles.inputShell}>
+              <View {...styles.inputAccent} />
+              <TextInput
+                value={inputValue}
+                onInput={(e) => setInputValue(e.value)}
+                placeholder="Name this chain…"
+                {...styles.input}
+              />
+            </View>
           </Panel>
 
           <Panel
@@ -608,20 +611,45 @@ const styles = {
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  input: {
+  inputShell: {
+    flexDirection: "row",
+    alignItems: "stretch",
     width: "100%",
-    minHeight: 42,
-    color: t.ink,
-    fontSize: 13,
-    backgroundColor: t.panelDeep,
-    borderRadius: 10,
+    backgroundColor: t.panelLift,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: t.hairline,
-    paddingLeft: 12,
-    paddingRight: 12,
-    "outline-color": t.accent,
+    padding: 5,
+    paddingLeft: 6,
+  },
+  inputAccent: {
+    width: 5,
+    alignSelf: "stretch",
+    borderRadius: 3,
+    backgroundColor: t.accent,
+    opacity: 0.92,
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    minHeight: 46,
+    color: t.ink,
+    fontSize: 14,
+    backgroundColor: t.panelDeep,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: t.rule,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 11,
+    paddingBottom: 11,
+    "outline-color": t.rule,
+    "focused-outline-color": t.accent,
+    "caret-color": t.accentGlow,
+    "highlight-color": "#5c4e38",
+    "highlighted-text-color": t.ink,
     "placeholder-color": t.inkFaint,
   },
   strip: {
