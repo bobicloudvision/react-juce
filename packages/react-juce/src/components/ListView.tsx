@@ -114,6 +114,21 @@ export class ListView extends Component<
     };
   }
 
+  /** Use measured size, or a numeric height from props when layout has not fired yet (e.g. nested ScrollView). */
+  _viewportHeight(): number {
+    const fromProps = this.props.height;
+    let hint = 0;
+    if (typeof fromProps === "number" && fromProps > 0) {
+      hint = fromProps;
+    } else if (typeof fromProps === "string" && !fromProps.endsWith("%")) {
+      const n = parseFloat(fromProps);
+      if (!isNaN(n) && n > 0) {
+        hint = n;
+      }
+    }
+    return Math.max(this.state.height, hint);
+  }
+
   _onMeasure(e: any): void {
     this.setState({
       width: e.width,
@@ -124,6 +139,7 @@ export class ListView extends Component<
   _calculateVirtualPositions(): VirtualPositions {
     const totalItems = this.props.data.length;
     const innerHeight = this.props.itemHeight * totalItems;
+    const viewportH = this._viewportHeight();
 
     invariant(
       this.props.itemHeight > 0,
@@ -132,7 +148,7 @@ export class ListView extends Component<
 
     // Pad num rendered items by 1 so we always render the same number of items
     // which allows us to use a fixed key value on each item in the list.
-    const numItems = Math.floor(this.state.height / this.props.itemHeight) + 1;
+    const numItems = Math.floor(viewportH / this.props.itemHeight) + 1;
 
     const startIndex = Math.floor(
       this.state.scrollTopPosition / this.props.itemHeight
@@ -168,7 +184,8 @@ export class ListView extends Component<
       "scrollParams.offset must be normalised between 0.0 and 1.0"
     );
 
-    const numItems = Math.floor(this.state.height / this.props.itemHeight);
+    const viewportH = this._viewportHeight();
+    const numItems = Math.floor(viewportH / this.props.itemHeight);
 
     const xPos = 0;
     let yPos =
@@ -191,7 +208,7 @@ export class ListView extends Component<
     // so that we simply re-render the existing views/components rather than
     // replacing them. This stops issues occuring when dynamically adding and removing
     // components inside a juce::Viewport.
-    if (this.state.height > 0) {
+    if (this._viewportHeight() > 0) {
       for (let i = positions.startIndex; i <= positions.endIndex; ++i) {
         items.push(
           this.props.renderItem(this.props.data[i], i, {

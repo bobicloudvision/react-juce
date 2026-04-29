@@ -113,6 +113,7 @@ export default function App() {
   const [clicks, setClicks] = useState(0);
   const [tickPhase, setTickPhase] = useState(0);
   const [lastEvent, setLastEvent] = useState("—");
+  const [canvasSize, setCanvasSize] = useState({ width: 640, height: 56 });
 
   useEffect(() => {
     const onTick = (phase) => setTickPhase(phase);
@@ -129,22 +130,21 @@ export default function App() {
 
   const onDrawWave = useCallback(
     (ctx) => {
-      const w = 640;
-      const h = 52;
-      const r = 8;
+      const w = Math.max(32, Math.floor(canvasSize.width));
+      const h = Math.max(24, Math.floor(canvasSize.height));
       ctx.fillStyle = t.surfaceHover;
-      ctx.fillRoundedRect(0, 0, w, h, r);
+      ctx.fillRect(0, 0, w, h);
       ctx.strokeStyle = t.border;
       ctx.lineWidth = 1;
-      ctx.strokeRoundedRect(0.5, 0.5, w - 1, h - 1, r);
+      ctx.strokeRect(0, 0, w, h);
 
       const mid = h * 0.5;
-      const amp = h * 0.22;
+      const amp = Math.min(h * 0.35, 14);
       ctx.strokeStyle = t.accent;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      for (let x = 0; x <= w; x += 3) {
-        const tNorm = (x / w) * Math.PI * 2 + tickPhase;
+      for (let x = 0; x <= w; x += 2) {
+        const tNorm = (x / Math.max(w, 1)) * Math.PI * 2 + tickPhase;
         const y = mid + Math.sin(tNorm) * amp;
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
@@ -154,12 +154,18 @@ export default function App() {
       ctx.strokeStyle = t.borderSubtle;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(12, mid);
-      ctx.lineTo(w - 12, mid);
+      ctx.moveTo(10, mid);
+      ctx.lineTo(w - 10, mid);
       ctx.stroke();
     },
-    [tickPhase]
+    [tickPhase, canvasSize.width, canvasSize.height]
   );
+
+  const onCanvasMeasure = useCallback((e) => {
+    if (e.width > 0 && e.height > 0) {
+      setCanvasSize({ width: e.width, height: e.height });
+    }
+  }, []);
 
   const listRenderItem = useCallback((item, index, layout) => {
     const rowStyle = index % 2 === 0 ? styles.listRow : styles.listRowAlt;
@@ -195,9 +201,8 @@ export default function App() {
 
           <View {...styles.statusPill}>
             <View {...styles.statusDot} />
-            <Text {...styles.statusText}>
-              Last event: <Text {...styles.statusEm}>{lastEvent}</Text>
-            </Text>
+            <Text {...styles.statusText}>Last event</Text>
+            <Text {...styles.statusEm}>{lastEvent}</Text>
           </View>
 
           <SectionCard
@@ -206,7 +211,7 @@ export default function App() {
             description="Remote fetch and webpack-bundled raster assets."
           >
             <View {...styles.twoCol}>
-              <View {...styles.mediaCol}>
+              <View {...styles.mediaColLeft}>
                 <View {...styles.mediaFrame}>
                   <Image
                     source="https://raw.githubusercontent.com/bobicloudvision/react-juce/master/examples/GainPlugin/jsui/src/logo.png"
@@ -215,7 +220,7 @@ export default function App() {
                 </View>
                 <Text {...styles.caption}>Remote URL</Text>
               </View>
-              <View {...styles.mediaCol}>
+              <View {...styles.mediaColRight}>
                 <View {...styles.mediaFrame}>
                   <Image source={logoSrc} {...styles.imageInFrame} />
                 </View>
@@ -229,7 +234,12 @@ export default function App() {
             title="Animated canvas"
             description="Waveform driven by the native playgroundTick timer (30 Hz)."
           >
-            <Canvas {...styles.canvas} animate={true} onDraw={onDrawWave} />
+            <Canvas
+              {...styles.canvas}
+              animate={true}
+              onMeasure={onCanvasMeasure}
+              onDraw={onDrawWave}
+            />
           </SectionCard>
 
           <SectionCard
@@ -294,7 +304,7 @@ export default function App() {
               data={LIST_DATA}
               renderItem={listRenderItem}
               itemHeight={40}
-              overflow="hidden"
+              overflow="scroll"
               scroll-on-drag={true}
             />
           </SectionCard>
@@ -378,12 +388,13 @@ const styles = {
   statusText: {
     color: t.textMuted,
     fontSize: 12,
-    flex: 1,
+    marginRight: 8,
   },
   statusEm: {
     color: t.textSecondary,
     fontSize: 12,
     fontStyle: Text.FontStyleFlags.bold,
+    flex: 1,
   },
   card: {
     backgroundColor: t.surface,
@@ -391,7 +402,6 @@ const styles = {
     borderWidth: 1,
     borderColor: t.border,
     marginBottom: 18,
-    overflow: "hidden",
   },
   cardTop: {
     flexDirection: "row",
@@ -446,11 +456,17 @@ const styles = {
     justifyContent: "space-between",
     width: "100%",
   },
-  mediaCol: {
+  mediaColLeft: {
     flex: 1,
     flexDirection: "column",
     alignItems: "stretch",
-    marginHorizontal: 6,
+    marginRight: 10,
+  },
+  mediaColRight: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "stretch",
+    marginLeft: 10,
   },
   mediaFrame: {
     backgroundColor: t.surfaceHover,
@@ -475,7 +491,9 @@ const styles = {
   },
   canvas: {
     width: "100%",
-    height: 56,
+    height: 64,
+    minHeight: 64,
+    flexShrink: 0,
   },
   btnPrimary: {
     justifyContent: "center",
@@ -594,6 +612,8 @@ const styles = {
   listView: {
     width: "100%",
     height: 220,
+    minHeight: 220,
+    flexShrink: 0,
     backgroundColor: t.surfaceHover,
     borderRadius: 8,
     borderWidth: 1,
