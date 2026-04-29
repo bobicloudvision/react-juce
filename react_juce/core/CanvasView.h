@@ -39,6 +39,7 @@ namespace reactjuce
             int                 lineWidth = 1;
             juce::Font          font;
             juce::Justification textAlign = juce::Justification::left;
+            juce::PathStrokeType::EndCapStyle lineCap = juce::PathStrokeType::butt;
         };
 
         struct CanvasContext

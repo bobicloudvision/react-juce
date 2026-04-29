@@ -35,6 +35,11 @@ export class CanvasRenderingContext {
     this._drawCommands.push(["setLineWidth", value]);
   }
 
+  /** `"butt"` | `"round"` | `"square"` — maps to JUCE path stroke end caps. */
+  set lineCap(value: string) {
+    this._drawCommands.push(["setLineCap", value]);
+  }
+
   set font(value: string) {
     this._drawCommands.push(["setFont", value]);
   }
@@ -128,7 +133,7 @@ export class CanvasRenderingContext {
   }
 
   closePath(): void {
-    this._drawCommands.push(["close"]);
+    this._drawCommands.push(["closePath"]);
   }
 
   stroke(): void {
@@ -162,6 +167,16 @@ export class CanvasRenderingContext {
 
   resetTransform(): void {
     this._drawCommands.push(["resetTransform"]);
+  }
+
+  /** Saves path, styles, transforms — paired with `restore()`. */
+  save(): void {
+    this._drawCommands.push(["save"]);
+  }
+
+  /** Pops the last `save()` state. */
+  restore(): void {
+    this._drawCommands.push(["restore"]);
   }
 
   //================================================================================

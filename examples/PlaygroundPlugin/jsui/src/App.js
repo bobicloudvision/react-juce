@@ -14,6 +14,14 @@ import {
 import Label from "./Label";
 import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
+import {
+  arcDefaultDraw,
+  dotPointerDraw,
+  insetFaceDraw,
+  needleDraw,
+  thickValueDraw,
+  tickedArcDraw,
+} from "./knobDrawings";
 import { ParamIds, useParameter } from "./ParameterValueContext";
 import { theme as t } from "./theme";
 
@@ -42,7 +50,7 @@ function Panel({ label, title, hint, children }) {
 
 function GainKnob() {
   const { stringValue, currentValue } = useParameter(ParamIds.DemoGain);
-  const drawRotary = useMemo(() => Slider.drawRotary(t.hairline, t.accent), []);
+  const drawRotary = useMemo(() => arcDefaultDraw(t), []);
   return (
     <View {...styles.knobCol}>
       <Text {...styles.controlTag}>GAIN</Text>
@@ -55,6 +63,54 @@ function GainKnob() {
       />
       <Label value={stringValue} {...styles.readout} />
     </View>
+  );
+}
+
+function KnobGallery() {
+  const { currentValue, stringValue } = useParameter(ParamIds.DemoGain);
+  const draws = useMemo(
+    () => ({
+      arc: arcDefaultDraw(t),
+      needle: needleDraw(t),
+      thick: thickValueDraw(t),
+      dot: dotPointerDraw(t),
+      inset: insetFaceDraw(t),
+      ticked: tickedArcDraw(t),
+    }),
+    []
+  );
+
+  const tiles = [
+    ["Arc", draws.arc],
+    ["Needle", draws.needle],
+    ["Bold arc", draws.thick],
+    ["Dot", draws.dot],
+    ["Inset", draws.inset],
+    ["Ticks + arc", draws.ticked],
+  ];
+
+  return (
+    <Panel
+      label="KNOBS"
+      title="Rotary styles"
+      hint="Canvas onDraw demos · all use DemoGain."
+    >
+      <Text {...styles.knobGalleryHint}>Shared readout · {stringValue}</Text>
+      <View {...styles.knobGalleryRow}>
+        {tiles.map(([label, onDraw]) => (
+          <View key={label} {...styles.knobTile}>
+            <Text {...styles.knobTileLabel}>{label}</Text>
+            <ParameterSlider
+              paramId={ParamIds.DemoGain}
+              value={currentValue}
+              onDraw={onDraw}
+              mapDragGestureToValue={Slider.rotaryGestureMap}
+              {...styles.rotarySmall}
+            />
+          </View>
+        ))}
+      </View>
+    </Panel>
   );
 }
 
@@ -272,6 +328,8 @@ export default function App() {
               {...styles.input}
             />
           </Panel>
+
+          <KnobGallery />
 
           <Panel
             label="DSP"
@@ -610,6 +668,34 @@ const styles = {
     "highlight-color": t.inputSelection,
     "highlighted-text-color": t.ink,
     "placeholder-color": t.inkFaint,
+  },
+  knobGalleryHint: {
+    color: t.inkSoft,
+    fontSize: 11,
+    marginBottom: 12,
+  },
+  knobGalleryRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "flex-end",
+  },
+  knobTile: {
+    alignItems: "center",
+    marginRight: 14,
+    marginBottom: 14,
+    minWidth: 76,
+  },
+  knobTileLabel: {
+    color: t.inkFaint,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 0.6,
+    marginBottom: 6,
+    textAlign: "center",
+  },
+  rotarySmall: {
+    width: 72,
+    height: 72,
   },
   strip: {
     flexDirection: "row",

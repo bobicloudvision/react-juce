@@ -52,6 +52,30 @@ namespace reactjuce
             ctx.properties.lineWidth = lineWidth;
         }
 
+        void setLineCap(CanvasView::CanvasContext           &ctx,
+                        juce::Graphics                      &g,
+                        const juce::var::NativeFunctionArgs &args)
+        {
+            jassert(args.numArguments == 1);
+            juce::ignoreUnused(g);
+
+            const auto s = args.arguments[0].toString();
+
+            if (s == "round")
+                ctx.properties.lineCap = juce::PathStrokeType::rounded;
+            else if (s == "square")
+                ctx.properties.lineCap = juce::PathStrokeType::square;
+            else
+                ctx.properties.lineCap = juce::PathStrokeType::butt;
+        }
+
+        juce::PathStrokeType makePathStrokeType(const CanvasView::CanvasContextProperties &props)
+        {
+            return juce::PathStrokeType((float) props.lineWidth,
+                                        juce::PathStrokeType::mitered,
+                                        props.lineCap);
+        }
+
         /**
          * TODO: Should this be pushed out into some sort of generic helpers namespace for parsing
          *       CSS like props?
@@ -345,7 +369,7 @@ namespace reactjuce
             juce::ignoreUnused(args);
 
             g.setColour(ctx.properties.strokeStyle.colour);
-            g.strokePath(ctx.path, juce::PathStrokeType((float)ctx.properties.lineWidth));
+            g.strokePath(ctx.path, makePathStrokeType(ctx.properties));
         }
 
         void fill(CanvasView::CanvasContext           &ctx,
@@ -488,7 +512,7 @@ namespace reactjuce
             glyphArrangement.createPath(textPath);
 
             g.setColour(ctx.properties.strokeStyle.colour);
-            g.strokePath(textPath, juce::PathStrokeType((float)ctx.properties.lineWidth));
+            g.strokePath(textPath, makePathStrokeType(ctx.properties));
         }
 
         void fillText(CanvasView::CanvasContext           &ctx,
@@ -532,6 +556,7 @@ namespace reactjuce
             { "setFillStyle"      , setFillStyle      },
             { "setStrokeStyle"    , setStrokeStyle    },
             { "setLineWidth"      , setLineWidth      },
+            { "setLineCap"        , setLineCap        },
             { "setFont"           , setFont           },
             { "setTextAlign"      , setTextAlign      },
             { "fillRect"          , fillRect          },
@@ -564,15 +589,35 @@ namespace reactjuce
     {
         jassert(drawCommands.isArray());
 
+        std::vector<CanvasContext> saveStack;
+
         for (juce::var &command : *drawCommands.getArray())
         {
             jassert(command.isArray());
             jassert(command.getArray()->size() >= 1);
 
             const auto args = command.getArray();
-            const auto name = (*args)[0];
+            const auto cmd  = (*args)[0].toString();
 
-            if (auto it = DrawCommands.find(name); it != DrawCommands.end())
+            if (cmd == "save")
+            {
+                saveStack.push_back(ctx);
+                g.saveState();
+                continue;
+            }
+
+            if (cmd == "restore")
+            {
+                if (! saveStack.empty())
+                {
+                    ctx = saveStack.back();
+                    saveStack.pop_back();
+                    g.restoreState();
+                }
+                continue;
+            }
+
+            if (auto it = DrawCommands.find(cmd); it != DrawCommands.end())
             {
                 it->second(ctx,
                            g,
