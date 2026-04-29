@@ -13,6 +13,9 @@ const reactJuceDownlevelDeps = /[\\/]packages[\\/]react-juce[\\/]node_modules[\\
 
 module.exports = (env, argv) => {
   const production = argv.mode === "production";
+  // Same as Playground: Duktape + React development scheduler → ReferenceError (`ma`, etc.).
+  const useDuktapeSafeReact =
+    production || process.env.RJUCE_USE_DEV_REACT !== "1";
 
   return {
     entry: "./src/index.js",
@@ -45,7 +48,7 @@ module.exports = (env, argv) => {
         // One webpack pass from source — rebundling dist/ nests __webpack_require__
         // and triggers harmony/CJS conflicts in Duktape.
         "react-juce": reactJuceSrc,
-        ...(production
+        ...(useDuktapeSafeReact
           ? {
               react: path.join(
                 __dirname,

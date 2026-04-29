@@ -15,26 +15,7 @@ import Label from "./Label";
 import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
 import { ParamIds, useParameter } from "./ParameterValueContext";
-
-/** Studio-carbon palette: warm dark panels, amber signal accent */
-const t = {
-  void: "#080706",
-  bg: "linear-gradient(168deg, #141210 0%, #0b0a09 42%, #10100e 100%)",
-  panel: "#161412",
-  panelLift: "#1f1c18",
-  panelDeep: "#0e0d0b",
-  hairline: "#2a2620",
-  rule: "#3a342c",
-  ink: "#f7f3eb",
-  inkSoft: "#b0a99c",
-  inkFaint: "#6b655b",
-  accent: "#e8b84a",
-  accentMuted: "#9a7b32",
-  accentGlow: "#f5d78a",
-  ok: "#5dd49a",
-  warn: "#e8a55c",
-  danger: "#e07070",
-};
+import { theme as t } from "./theme";
 
 const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
   id: i,
@@ -626,7 +607,7 @@ const styles = {
     "outline-color": t.hairline,
     "focused-outline-color": t.hairline,
     "caret-color": t.accent,
-    "highlight-color": "#343028",
+    "highlight-color": t.inputSelection,
     "highlighted-text-color": t.ink,
     "placeholder-color": t.inkFaint,
   },
@@ -721,7 +702,7 @@ const styles = {
     paddingRight: 12,
     borderBottomWidth: 1,
     borderColor: t.hairline,
-    backgroundColor: "#141210",
+    backgroundColor: t.surfaceListAlt,
   },
   listAccent: {
     width: 3,

@@ -1,6 +1,7 @@
 import ParameterValueStore from "./ParameterValueStore";
 import React, { Component } from "react";
 import { Button } from "react-juce";
+import { theme } from "./theme";
 import {
   beginParameterChangeGesture,
   endParameterChangeGesture,
@@ -30,8 +31,8 @@ class ParameterToggleButton extends Component {
         ? paramState.currentValue
         : 0.0;
 
-    this.defaultBorderColor = "#2a2620";
-    this.hoverBorderColor = "#e8b84a";
+    this.defaultBorderColor = theme.hairline;
+    this.hoverBorderColor = theme.accent;
 
     this.state = {
       defaultValue: initialDefaultValue,

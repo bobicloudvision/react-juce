@@ -13,6 +13,11 @@ const reactJuceDownlevelDeps = /[\\/]packages[\\/]react-juce[\\/]node_modules[\\
 
 module.exports = (env, argv) => {
   const production = argv.mode === "production";
+  // Duktape often crashes on React's *development* scheduler (ReferenceError on minified
+  // locals such as `ma`). Watch mode defaults to production React + scheduler; opt into dev
+  // React with: RJUCE_USE_DEV_REACT=1 npm start
+  const useDuktapeSafeReact =
+    production || process.env.RJUCE_USE_DEV_REACT !== "1";
 
   return {
     entry: "./src/index.js",
@@ -39,7 +44,7 @@ module.exports = (env, argv) => {
       conditionNames: ["require", "node"],
       alias: {
         "react-juce": reactJuceSrc,
-        ...(production
+        ...(useDuktapeSafeReact
           ? {
               react: path.join(
                 __dirname,
