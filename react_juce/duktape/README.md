@@ -1,9 +1,6 @@
-# Duktape (vendored)
+# Duktape layout
 
-Single tree under `react_juce/duktape/`:
+- **`react_juce/third_party/duktape`** — git submodule ([svaarala/duktape](https://github.com/svaarala/duktape)), pinned to the same release as the amalgamation below. Holds `extras/console`, `examples/debug-trans-socket`, and the rest of upstream.
+- **`src-noline/`** (this directory) — amalgamation (`duktape.c`, `duktape.h`, `duk_config.h`) kept in this repo; `duk_config.h` includes the react-juce `JUCE_DEBUG` block.
 
-- `src-noline/` — amalgamation (`duktape.c`, `duktape.h`, `duk_config.h`); includes the react-juce `JUCE_DEBUG` block in `duk_config.h`.
-- `extras/console/` — console extra compiled by `EcmascriptEngine_Duktape.cpp`.
-- `examples/debug-trans-socket/` — debugger transport sources.
-
-All of the above are taken from the same **Duktape release** (currently **2.7.0**). To upgrade: use the matching [release tarball](https://github.com/svaarala/duktape/releases), replace `src-noline/` and refresh extras/debug-trans-socket if upstream changed them, then re-apply the `duk_config.h` `JUCE_DEBUG` section.
+After clone run `git submodule update --init --recursive`. To bump Duktape: advance the submodule to a new tag, replace `src-noline/` from that release’s dist output, re-apply the `duk_config.h` `JUCE_DEBUG` section, and rebuild.

@@ -47,6 +47,11 @@ elseif (REACTJUCE_JS_LIBRARY STREQUAL "DUKTAPE")
         INTERFACE
         REACTJUCE_USE_DUKTAPE=1
     )
+    target_include_directories(
+        react_juce
+        INTERFACE
+        "${CMAKE_CURRENT_SOURCE_DIR}/react_juce/third_party"
+    )
 endif()
 
 # If you want to create new projects, you can init them in the examples folder
