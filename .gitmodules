@@ -1,9 +1,9 @@
 [submodule "juce"]
 	path = ext/juce
 	url = ../../juce-framework/JUCE.git
-[submodule "yoga"]
+[submodule "react_juce/yoga"]
 	path = react_juce/yoga
-	url = ../../facebook/yoga.git
+	url = https://github.com/facebook/yoga.git
 [submodule "react_juce/hermes"]
 	path = react_juce/hermes
-	url = ../../facebook/hermes.git
+	url = https://github.com/facebook/hermes.git
