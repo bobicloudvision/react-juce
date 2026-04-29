@@ -25,6 +25,7 @@
     "build:native": "cmake --build build --parallel",
     "build:gainplugin": "npm run build:jsui && npm run build:native",
     "build:playground": "npm run build:playground-jsui && npm run build:native",
+    "dev:playground-jsui": "npm --prefix examples/PlaygroundPlugin/jsui run start",
     "build": "npm run configure && npm run build:gainplugin"
   },
   "husky": {
