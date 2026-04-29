@@ -34,7 +34,19 @@ module.exports = (env) => {
         {
           test: /\.js$/,
           include: [path.resolve(__dirname, "node_modules", "matrix-js")],
-          use: ["babel-loader"],
+          use: [
+            {
+              loader: "babel-loader",
+              options: {
+                babelrc: false,
+                configFile: false,
+                plugins: [
+                  "@babel/plugin-transform-arrow-functions",
+                  "@babel/plugin-transform-block-scoping",
+                ],
+              },
+            },
+          ],
         },
         {
           test: /\.svg$/,
