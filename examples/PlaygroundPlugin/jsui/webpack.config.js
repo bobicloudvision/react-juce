@@ -43,6 +43,8 @@ module.exports = (env, argv) => {
       extensions: [".tsx", ".ts", ".jsx", ".js", "..."],
       conditionNames: ["require", "node"],
       alias: {
+        // Pin one core-js tree (avoids broken resolution of core-js/es6/*.js on some installs).
+        "core-js": path.join(__dirname, "node_modules/core-js"),
         "react-juce": reactJuceSrc,
         ...(useDuktapeSafeReact
           ? {

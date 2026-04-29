@@ -30,7 +30,40 @@ const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
   label: `Row ${String(i + 1).padStart(3, "0")}`,
 }));
 
+/** Example categories — add new tabs here and render the matching block in `App`. */
+const EXAMPLE_TABS = [
+  { id: "visual", label: "Visual" },
+  { id: "controls", label: "Controls" },
+  { id: "knobs", label: "Knobs" },
+  { id: "dsp", label: "DSP" },
+  { id: "data", label: "Lists" },
+];
+
 const logoSrc = require("./logo.png");
+
+function ExampleTabBar({ activeId, onSelect }) {
+  return (
+    <View {...styles.tabBar}>
+      <Text {...styles.tabBarKicker}>EXAMPLES</Text>
+      <View {...styles.tabRow}>
+        {EXAMPLE_TABS.map((tab) => {
+          const isActive = tab.id === activeId;
+          return (
+            <Button
+              key={tab.id}
+              {...(isActive ? styles.tabBtnOn : styles.tabBtn)}
+              onClick={() => onSelect(tab.id)}
+            >
+              <Text {...(isActive ? styles.tabLabelOn : styles.tabLabel)}>
+                {tab.label}
+              </Text>
+            </Button>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 function Panel({ label, title, hint, children }) {
   return (
@@ -138,6 +171,7 @@ function DepthSlider() {
 }
 
 export default function App() {
+  const [activeExampleTab, setActiveExampleTab] = useState(EXAMPLE_TABS[0].id);
   const [inputValue, setInputValue] = useState("Signal chain · rename me");
   const [clicks, setClicks] = useState(0);
   const [tickPhase, setTickPhase] = useState(0);
@@ -229,7 +263,7 @@ export default function App() {
               <View {...styles.chromeTitles}>
                 <Text {...styles.chromeTitle}>Playground</Text>
                 <Text {...styles.chromeSub}>
-                  React-JUCE · layout, bridge, canvas, lists
+                  Tabs switch example groups · bridge & params stay live
                 </Text>
               </View>
             </View>
@@ -243,126 +277,139 @@ export default function App() {
             <Text {...styles.telemetryValue}>{lastEvent}</Text>
           </View>
 
-          <Panel
-            label="VISUAL"
-            title="Assets & scope"
-            hint="Network image, bundled PNG, and timer-driven canvas in one panel."
-          >
-            <View {...styles.split}>
-              <View {...styles.splitLeft}>
-                <Text {...styles.splitCaption}>Remote URL</Text>
-                <View {...styles.assetWell}>
-                  <Image
-                    source="https://raw.githubusercontent.com/bobicloudvision/react-juce/master/examples/GainPlugin/jsui/src/logo.png"
-                    {...styles.assetImg}
-                  />
-                </View>
-                <Text {...styles.splitCaption}>Bundled</Text>
-                <View {...styles.assetWell}>
-                  <Image source={logoSrc} {...styles.assetImg} />
-                </View>
-              </View>
-              <View {...styles.splitRight}>
-                <Text {...styles.splitCaption}>Canvas · 30 Hz tick</Text>
-                <View {...styles.canvasShell}>
-                  <Canvas
-                    {...styles.canvasInner}
-                    animate={true}
-                    onMeasure={onCanvasMeasure}
-                    onDraw={onDrawWave}
-                  />
-                </View>
-              </View>
-            </View>
-          </Panel>
+          <ExampleTabBar
+            activeId={activeExampleTab}
+            onSelect={setActiveExampleTab}
+          />
 
-          <Panel
-            label="INPUT"
-            title="Controls & copy"
-            hint="Button, Text styles, and TextInput."
-          >
-            <View {...styles.actionRow}>
-              <Button
-                {...styles.btnGhost}
-                onClick={() => setClicks((c) => c + 1)}
-              >
-                <Text {...styles.btnGhostLabel}>Pulse · {clicks}</Text>
-              </Button>
-              <Button {...styles.btnSolid} onClick={() => setClicks(0)}>
-                <Text {...styles.btnSolidLabel}>Reset</Text>
-              </Button>
-            </View>
-
-            <View {...styles.typeRow}>
-              <View {...styles.typeCol}>
-                <Text {...styles.typeLabel}>Body</Text>
-                <Text {...styles.typeBody}>
-                  Paragraph rhythm for descriptions and parameter copy.
-                </Text>
-              </View>
-              <View {...styles.typeCol}>
-                <Text {...styles.typeLabel}>Emphasis</Text>
-                <Text
-                  {...styles.typeStrong}
-                  fontStyle={Text.FontStyleFlags.bold}
-                >
-                  Section titles and key values.
-                </Text>
-              </View>
-              <View {...styles.typeCol}>
-                <Text {...styles.typeLabel}>Alt</Text>
-                <Text
-                  {...styles.typeItalic}
-                  fontStyle={Text.FontStyleFlags.italic}
-                >
-                  Hints, quotes, secondary lines.
-                </Text>
-              </View>
-            </View>
-
-            <Text {...styles.fieldLabel}>TEXT INPUT</Text>
-            <TextInput
-              value={inputValue}
-              onInput={(e) => setInputValue(e.value)}
-              placeholder="Patch name"
-              {...styles.input}
-            />
-          </Panel>
-
-          <KnobGallery />
-
-          <Panel
-            label="DSP"
-            title="Parameter strip"
-            hint="APVTS → EventBridge; rotary, linear slider, bypass."
-          >
-            <View {...styles.strip}>
-              <GainKnob />
-              <View {...styles.stripDivider} />
-              <DepthSlider />
-            </View>
-            <ParameterToggleButton
-              paramId={ParamIds.DemoBypass}
-              {...styles.bypass}
+          {activeExampleTab === "visual" ? (
+            <Panel
+              label="VISUAL"
+              title="Assets & scope"
+              hint="Network image, bundled PNG, and timer-driven canvas in one panel."
             >
-              <Text {...styles.bypassLabel}>Bypass — unity gain (dry)</Text>
-            </ParameterToggleButton>
-          </Panel>
+              <View {...styles.split}>
+                <View {...styles.splitLeft}>
+                  <Text {...styles.splitCaption}>Remote URL</Text>
+                  <View {...styles.assetWell}>
+                    <Image
+                      source="https://raw.githubusercontent.com/bobicloudvision/react-juce/master/examples/GainPlugin/jsui/src/logo.png"
+                      {...styles.assetImg}
+                    />
+                  </View>
+                  <Text {...styles.splitCaption}>Bundled</Text>
+                  <View {...styles.assetWell}>
+                    <Image source={logoSrc} {...styles.assetImg} />
+                  </View>
+                </View>
+                <View {...styles.splitRight}>
+                  <Text {...styles.splitCaption}>Canvas · 30 Hz tick</Text>
+                  <View {...styles.canvasShell}>
+                    <Canvas
+                      {...styles.canvasInner}
+                      animate={true}
+                      onMeasure={onCanvasMeasure}
+                      onDraw={onDrawWave}
+                    />
+                  </View>
+                </View>
+              </View>
+            </Panel>
+          ) : null}
 
-          <Panel
-            label="DATA"
-            title="Virtualized list"
-            hint="ListView recycles rows; drag or scroll."
-          >
-            <ListView
-              {...styles.listView}
-              data={LIST_DATA}
-              renderItem={listRenderItem}
-              itemHeight={44}
-              overflow="scroll"
-              scroll-on-drag={true}
-            />
-          </Panel>
+          {activeExampleTab === "controls" ? (
+            <Panel
+              label="INPUT"
+              title="Controls & copy"
+              hint="Button, Text styles, and TextInput."
+            >
+              <View {...styles.actionRow}>
+                <Button
+                  {...styles.btnGhost}
+                  onClick={() => setClicks((c) => c + 1)}
+                >
+                  <Text {...styles.btnGhostLabel}>Pulse · {clicks}</Text>
+                </Button>
+                <Button {...styles.btnSolid} onClick={() => setClicks(0)}>
+                  <Text {...styles.btnSolidLabel}>Reset</Text>
+                </Button>
+              </View>
+
+              <View {...styles.typeRow}>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Body</Text>
+                  <Text {...styles.typeBody}>
+                    Paragraph rhythm for descriptions and parameter copy.
+                  </Text>
+                </View>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Emphasis</Text>
+                  <Text
+                    {...styles.typeStrong}
+                    fontStyle={Text.FontStyleFlags.bold}
+                  >
+                    Section titles and key values.
+                  </Text>
+                </View>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Alt</Text>
+                  <Text
+                    {...styles.typeItalic}
+                    fontStyle={Text.FontStyleFlags.italic}
+                  >
+                    Hints, quotes, secondary lines.
+                  </Text>
+                </View>
+              </View>
+
+              <Text {...styles.fieldLabel}>TEXT INPUT</Text>
+              <TextInput
+                value={inputValue}
+                onInput={(e) => setInputValue(e.value)}
+                placeholder="Patch name"
+                {...styles.input}
+              />
+            </Panel>
+          ) : null}
+
+          {activeExampleTab === "knobs" ? <KnobGallery /> : null}
+
+          {activeExampleTab === "dsp" ? (
+            <Panel
+              label="DSP"
+              title="Parameter strip"
+              hint="APVTS → EventBridge; rotary, linear slider, bypass."
+            >
+              <View {...styles.strip}>
+                <GainKnob />
+                <View {...styles.stripDivider} />
+                <DepthSlider />
+              </View>
+              <ParameterToggleButton
+                paramId={ParamIds.DemoBypass}
+                {...styles.bypass}
+              >
+                <Text {...styles.bypassLabel}>Bypass — unity gain (dry)</Text>
+              </ParameterToggleButton>
+            </Panel>
+          ) : null}
+
+          {activeExampleTab === "data" ? (
+            <Panel
+              label="DATA"
+              title="Virtualized list"
+              hint="ListView recycles rows; drag or scroll."
+            >
+              <ListView
+                {...styles.listView}
+                data={LIST_DATA}
+                renderItem={listRenderItem}
+                itemHeight={44}
+                overflow="scroll"
+                scroll-on-drag={true}
+              />
+            </Panel>
+          ) : null}
 
           <Text {...styles.footer}>React-JUCE Playground · reference UI</Text>
           <View {...styles.footerSpacer} />
@@ -473,6 +520,65 @@ const styles = {
     color: t.accentGlow,
     fontSize: 12,
     flex: 1,
+    fontStyle: Text.FontStyleFlags.bold,
+  },
+  tabBar: {
+    flexDirection: "column",
+    marginBottom: 18,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderColor: t.hairline,
+  },
+  tabBarKicker: {
+    color: t.accentMuted,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 2,
+    marginBottom: 10,
+  },
+  tabRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  tabBtn: {
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 36,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 8,
+    paddingBottom: 8,
+    marginRight: 8,
+    marginBottom: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: t.hairline,
+    backgroundColor: t.panelDeep,
+  },
+  tabBtnOn: {
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 36,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 8,
+    paddingBottom: 8,
+    marginRight: 8,
+    marginBottom: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: t.accent,
+    backgroundColor: t.panelLift,
+  },
+  tabLabel: {
+    color: t.inkSoft,
+    fontSize: 12,
+    fontStyle: Text.FontStyleFlags.bold,
+  },
+  tabLabelOn: {
+    color: t.accentGlow,
+    fontSize: 12,
     fontStyle: Text.FontStyleFlags.bold,
   },
   panel: {
