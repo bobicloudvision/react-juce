@@ -3,10 +3,12 @@ module.exports = {
     [
       "@babel/preset-env",
       {
-        modules: "umd",
+        modules: false,
+        targets: { ie: "11" },
       },
     ],
     "@babel/preset-react",
+    "@babel/preset-typescript",
   ],
   plugins: [
     "@babel/plugin-proposal-class-properties",

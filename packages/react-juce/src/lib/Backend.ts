@@ -1,5 +1,4 @@
 import { all as allCssProps } from "known-css-properties";
-import camelCase from "camelcase";
 import NativeMethods from "./NativeMethods";
 import SyntheticEvents, {
   SyntheticMouseEvent,
@@ -12,15 +11,22 @@ import Colors from "./MacroProperties/Colors";
 export type Instance = ViewInstance | RawTextViewInstance;
 
 let __rootViewInstance: ViewInstance | null = null;
-let __viewRegistry: Map<string, Instance> = new Map<string, Instance>();
+const __viewRegistry: { [id: string]: Instance } = Object.create(null);
 let __lastMouseDownViewId: string | null = null;
+
+function hyphenatedStyleKeyToCamelCase(name: string): string {
+  return name.replace(/-([a-zA-Z])/g, (_m, c: string) => c.toUpperCase());
+}
 
 // get any css properties not beginning with a "-",
 // and build a map from any camelCase versions to
 // the hyphenated version
 const cssPropsMap = allCssProps
   .filter((s) => !s.startsWith("-") && s.includes("-"))
-  .reduce((acc, v) => Object.assign(acc, { [camelCase(v)]: v }), {});
+  .reduce(
+    (acc, v) => Object.assign(acc, { [hyphenatedStyleKeyToCamelCase(v)]: v }),
+    {}
+  );
 
 export class ViewInstance {
   private _id: string;
@@ -88,7 +94,7 @@ export class ViewInstance {
     if (index >= 0) {
       this._children.splice(index, 1);
 
-      __viewRegistry.delete(childInstance.getViewId());
+      delete __viewRegistry[childInstance.getViewId()];
 
       //@ts-ignore
       return NativeMethods.removeChild(this._id, childInstance._id);
@@ -237,17 +243,20 @@ NativeMethods.dispatchViewEvent = function dispatchEvent(
   eventType: string,
   event: any
 ) {
-  if (__viewRegistry.hasOwnProperty(viewId)) {
+  if (Object.prototype.hasOwnProperty.call(__viewRegistry, viewId)) {
     const instance = __viewRegistry[viewId];
 
     // Convert target/relatedTarget to concrete ViewInstance refs
-    if (event.target && __viewRegistry.hasOwnProperty(event.target)) {
+    if (
+      event.target &&
+      Object.prototype.hasOwnProperty.call(__viewRegistry, event.target)
+    ) {
       event.target = __viewRegistry[event.target];
     }
 
     if (
       event.relatedTarget &&
-      __viewRegistry.hasOwnProperty(event.relatedTarget)
+      Object.prototype.hasOwnProperty.call(__viewRegistry, event.relatedTarget)
     ) {
       event.relatedTarget = __viewRegistry[event.relatedTarget];
     }

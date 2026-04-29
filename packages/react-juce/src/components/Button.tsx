@@ -89,7 +89,10 @@ export class Button extends Component<ButtonProps, ButtonState> {
 
   render = () => {
     const { onMouseDown, onMouseUp, onClick, ...other } = this.props;
-    const opacity = this.state.down ? 0.8 : 1.0;
+    let opacity = 1.0;
+    if (this.state.down) {
+      opacity = 0.8;
+    }
 
     return (
       <View
