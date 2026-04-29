@@ -56,17 +56,17 @@
 #include <juce_core/system/juce_TargetPlatform.h>
 
 #include <duktape/src-noline/duktape.c>
-#include <extras/console/duk_console.c>
+#include <duktape/extras/console/duk_console.c>
 
 #if defined (_WIN32) || defined (_WIN64)
-#include <examples/debug-trans-socket/duk_trans_socket_windows.c>
+#include <duktape/examples/debug-trans-socket/duk_trans_socket_windows.c>
 #else
-#include <examples/debug-trans-socket/duk_trans_socket_unix.c>
+#include <duktape/examples/debug-trans-socket/duk_trans_socket_unix.c>
 #endif
 
 #include <duktape/src-noline/duktape.h>
-#include <extras/console/duk_console.h>
-#include <examples/debug-trans-socket/duk_trans_socket.h>
+#include <duktape/extras/console/duk_console.h>
+#include <duktape/examples/debug-trans-socket/duk_trans_socket.h>
 
 #if _MSC_VER
 #elif __clang__
