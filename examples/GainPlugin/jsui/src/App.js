@@ -57,7 +57,7 @@ class App extends Component {
       : "hsla(162, 97%, 70%, 1)";
 
     const logo_url =
-      "https://raw.githubusercontent.com/nick-thompson/react-juce/master/examples/GainPlugin/jsui/src/logo.png";
+      "https://raw.githubusercontent.com/bobicloudvision/react-juce/master/examples/GainPlugin/jsui/src/logo.png";
     //const logo_png = require('./logo.png');
     //const logo_svg = require('./logo.svg');
 
