@@ -26,6 +26,7 @@
 #pragma warning(push)
 #elif __clang__
 #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wdeprecated-declarations"
  #pragma clang diagnostic ignored "-Wextra-semi"
  #pragma clang diagnostic ignored "-Wsign-conversion"
  #pragma clang diagnostic ignored "-Wswitch-enum"
@@ -43,6 +44,7 @@
  #endif
 #elif __GNUC__
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wswitch-enum"
@@ -189,6 +191,7 @@ namespace reactjuce
 
         juce::var evaluateBytecode(const juce::File &code)
         {
+            juce::ignoreUnused (code);
             throw Error("Duktape engine does not currently support bytecode evaluation");
         }
 

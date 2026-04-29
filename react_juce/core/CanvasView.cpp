@@ -332,7 +332,10 @@ namespace reactjuce
             //TODO; Handle antiClockWise
             //bool        antiClockWise = args.arguments[5];
 
-            ctx.path.addCentredArc(x, y, radius, radius, 0.0f, startAngle, endAngle, false);
+            // true: start the arc as its own subpath at the first point on the ellipse (matches HTML
+            // canvas arc()). false incorrectly continues from the previous point — after beginPath() that
+            // yields a stray straight segment from (0,0) to the arc start.
+            ctx.path.addCentredArc(x, y, radius, radius, 0.0f, startAngle, endAngle, true);
         }
 
         void quadraticCurveTo(CanvasView::CanvasContext           &ctx,

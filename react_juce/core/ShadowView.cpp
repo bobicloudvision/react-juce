@@ -69,7 +69,7 @@ namespace reactjuce
     }
 
     //==============================================================================
-    ShadowView::ShadowViewPimpl& ShadowView::getShadowViewImpl() { return *shadowViewPimpl;  };
+    ShadowView::ShadowViewPimpl& ShadowView::getShadowViewImpl() { return *shadowViewPimpl; }
 
     //==============================================================================
 

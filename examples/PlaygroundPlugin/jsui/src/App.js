@@ -681,9 +681,9 @@ const styles = {
   },
   knobTile: {
     alignItems: "center",
-    marginRight: 14,
-    marginBottom: 14,
-    minWidth: 76,
+    marginRight: 16,
+    marginBottom: 16,
+    minWidth: 96,
   },
   knobTileLabel: {
     color: t.inkFaint,
@@ -694,8 +694,8 @@ const styles = {
     textAlign: "center",
   },
   rotarySmall: {
-    width: 72,
-    height: 72,
+    width: 92,
+    height: 92,
   },
   strip: {
     flexDirection: "row",

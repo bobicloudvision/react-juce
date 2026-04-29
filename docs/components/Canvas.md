@@ -10,7 +10,7 @@ Each paint builds a **command list** from your callback (e.g. `fillStyle`, `arc`
 
 **Styles:** `fillStyle`, `strokeStyle`, `lineWidth`, `lineCap`, `font`, `textAlign`.
 
-**Paths:** `beginPath`, `moveTo`, `lineTo`, `arc`, `quadraticCurveTo`, `closePath`, `fill`, `stroke`.
+**Paths:** `beginPath`, `moveTo`, `lineTo`, `arc`, `quadraticCurveTo`, `closePath`, `fill`, `stroke`. Each `arc` begins a new subpath at the arc (aligned with HTML canvas); this avoids a spurious straight segment from the path origin.
 
 **Transforms:** `rotate`, `translate`, `setTransform`, `resetTransform`.
 
