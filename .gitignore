@@ -9,7 +9,7 @@
 .vscode/
 .cache/
 
-build
+/build
 .duktape-venv
 examples/TestRunner/Builds
 examples/**/build
