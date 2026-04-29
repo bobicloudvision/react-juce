@@ -284,15 +284,12 @@ export default function App() {
             </View>
 
             <Text {...styles.fieldLabel}>TEXT INPUT</Text>
-            <View {...styles.inputShell}>
-              <View {...styles.inputAccent} />
-              <TextInput
-                value={inputValue}
-                onInput={(e) => setInputValue(e.value)}
-                placeholder="Name this chain…"
-                {...styles.input}
-              />
-            </View>
+            <TextInput
+              value={inputValue}
+              onInput={(e) => setInputValue(e.value)}
+              placeholder="Patch name"
+              {...styles.input}
+            />
           </Panel>
 
           <Panel
@@ -611,44 +608,25 @@ const styles = {
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
-    marginBottom: 8,
-  },
-  inputShell: {
-    flexDirection: "row",
-    alignItems: "stretch",
-    width: "100%",
-    backgroundColor: t.panelLift,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: t.hairline,
-    padding: 5,
-    paddingLeft: 6,
-  },
-  inputAccent: {
-    width: 5,
-    alignSelf: "stretch",
-    borderRadius: 3,
-    backgroundColor: t.accent,
-    opacity: 0.92,
-    marginRight: 12,
+    marginBottom: 6,
   },
   input: {
-    flex: 1,
-    minHeight: 46,
+    width: "100%",
+    minHeight: 40,
     color: t.ink,
-    fontSize: 14,
+    fontSize: 13,
     backgroundColor: t.panelDeep,
-    borderRadius: 9,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: t.rule,
+    borderColor: t.hairline,
     paddingLeft: 14,
     paddingRight: 14,
-    paddingTop: 11,
-    paddingBottom: 11,
-    "outline-color": t.rule,
-    "focused-outline-color": t.accent,
-    "caret-color": t.accentGlow,
-    "highlight-color": "#5c4e38",
+    paddingTop: 10,
+    paddingBottom: 10,
+    "outline-color": t.hairline,
+    "focused-outline-color": t.hairline,
+    "caret-color": t.accent,
+    "highlight-color": "#343028",
     "highlighted-text-color": t.ink,
     "placeholder-color": t.inkFaint,
   },
