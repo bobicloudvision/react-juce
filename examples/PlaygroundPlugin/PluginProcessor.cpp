@@ -147,8 +147,8 @@ AudioProcessorEditor* PlaygroundPluginAudioProcessor::createEditor()
 
     auto* editor = new reactjuce::GenericEditor(*this, bundle);
     editor->setResizable(true, true);
-    editor->setResizeLimits(640, 480, 2400, 1600);
-    editor->setSize(1000, 720);
+    editor->setResizeLimits(560, 520, 2560, 1800);
+    editor->setSize(1100, 800);
     startTimerHz(30);
     return editor;
 }

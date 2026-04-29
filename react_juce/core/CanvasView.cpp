@@ -601,6 +601,9 @@ namespace reactjuce
     {
         View::setProperty(name, value);
 
+        if (name == onDrawProp)
+            repaint();
+
         if (name == animateProp)
         {
             bool shouldAnimate = value;
@@ -636,6 +639,9 @@ namespace reactjuce
             const auto drawCommands = std::invoke( props[onDrawProp].getNativeFunction()
                                                  , juce::var::NativeFunctionArgs(juce::var(), nullptr, 0u));
 
+            if (!drawCommands.isArray())
+                return;
+
             if (props.contains(statefulProp) && props[statefulProp])
             {
                 juce::Graphics imageGraphics(canvasImage);
@@ -656,6 +662,7 @@ namespace reactjuce
     void CanvasView::resized()
     {
         View::resized();
+        repaint();
 
         if (props.contains(statefulProp) && props[statefulProp])
         {

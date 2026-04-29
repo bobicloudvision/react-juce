@@ -11,9 +11,9 @@ const Label = ({ value, ...props }) => {
 
 const styles = {
   labelText: {
-    color: "#f0f4f8",
-    fontSize: 15.0,
-    lineSpacing: 1.45,
+    color: "#f7f3eb",
+    fontSize: 14.0,
+    lineSpacing: 1.4,
     fontStyle: Text.FontStyleFlags.bold,
   },
 };

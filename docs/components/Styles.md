@@ -58,8 +58,8 @@ any other prop. In the future, we may adopt an API closer to that of React Nativ
 
 ## View Props
 
-| Property                   | Support                                                                  | Spec                                                                                                            |
-| -------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Property                   | Support                                                                    | Spec                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | border-left-width          | Planned [(#143)](https://github.com/bobicloudvision/react-juce/issues/143) | [MDN border-width](https://developer.mozilla.org/en-US/docs/Web/CSS/border-width)                               |
 | border-right-width         | Planned [(#143)](https://github.com/bobicloudvision/react-juce/issues/143) | [MDN border-width](https://developer.mozilla.org/en-US/docs/Web/CSS/border-width)                               |
 | border-top-width           | Planned [(#143)](https://github.com/bobicloudvision/react-juce/issues/143) | [MDN border-width](https://developer.mozilla.org/en-US/docs/Web/CSS/border-width)                               |
@@ -76,4 +76,4 @@ any other prop. In the future, we may adopt an API closer to that of React Nativ
 | border-color               | Planned [(#143)](https://github.com/bobicloudvision/react-juce/issues/143) | [MDN border-color](https://developer.mozilla.org/en-US/docs/Web/CSS/border-color)                               |
 | border-radius              | Planned [(#143)](https://github.com/bobicloudvision/react-juce/issues/143) | [MDN border-radius](https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius)                             |
 | background-color           | Partial [(#84)](https://github.com/bobicloudvision/react-juce/issues/84)   | [MDN background-color](https://developer.mozilla.org/en-US/docs/Web/CSS/background-color)                       |
-| opacity                    | Yes                                                                      | [juce::Component::setAlpha](https://docs.juce.com/master/classComponent.html#a1b9329a87c71ed01319071e0fedac128) |
+| opacity                    | Yes                                                                        | [juce::Component::setAlpha](https://docs.juce.com/master/classComponent.html#a1b9329a87c71ed01319071e0fedac128) |

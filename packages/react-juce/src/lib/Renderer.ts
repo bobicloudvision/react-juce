@@ -149,7 +149,9 @@ const HostConfig = {
   didNotFindHydratableSuspenseInstanceWithinSuspenseInstance: throwUnsupported(
     "didNotFindHydratableSuspenseInstanceWithinSuspenseInstance"
   ),
-  didNotFindHydratableInstance: throwUnsupported("didNotFindHydratableInstance"),
+  didNotFindHydratableInstance: throwUnsupported(
+    "didNotFindHydratableInstance"
+  ),
   didNotFindHydratableTextInstance: throwUnsupported(
     "didNotFindHydratableTextInstance"
   ),

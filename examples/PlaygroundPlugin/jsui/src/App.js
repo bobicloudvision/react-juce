@@ -16,60 +16,55 @@ import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
 import { ParamIds, useParameter } from "./ParameterValueContext";
 
+/** Studio-carbon palette: warm dark panels, amber signal accent */
 const t = {
-  bg: "#0a0d12",
-  bgElevated: "linear-gradient(180deg, #0e131a 0%, #0a0d12 55%, #080b0f 100%)",
-  surface: "#121820",
-  surfaceHover: "#181f2a",
-  border: "#252f3f",
-  borderSubtle: "#1c2430",
-  text: "#f0f4f8",
-  textSecondary: "#9aa8b8",
-  textMuted: "#5c6d80",
-  accent: "#3db8e8",
-  accentSoft: "#2a8eb8",
-  accentDim: "rgba(61, 184, 232, 0.15)",
-  success: "#34d399",
-  warning: "#fbbf24",
+  void: "#080706",
+  bg: "linear-gradient(168deg, #141210 0%, #0b0a09 42%, #10100e 100%)",
+  panel: "#161412",
+  panelLift: "#1f1c18",
+  panelDeep: "#0e0d0b",
+  hairline: "#2a2620",
+  rule: "#3a342c",
+  ink: "#f7f3eb",
+  inkSoft: "#b0a99c",
+  inkFaint: "#6b655b",
+  accent: "#e8b84a",
+  accentMuted: "#9a7b32",
+  accentGlow: "#f5d78a",
+  ok: "#5dd49a",
+  warn: "#e8a55c",
+  danger: "#e07070",
 };
 
 const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
   id: i,
-  label: `Item ${String(i + 1).padStart(3, "0")}`,
+  label: `Row ${String(i + 1).padStart(3, "0")}`,
 }));
 
 const logoSrc = require("./logo.png");
 
-function SectionCard({ badge, title, description, children }) {
+function Panel({ label, title, hint, children }) {
   return (
-    <View {...styles.card}>
-      <View {...styles.cardTop}>
-        {badge ? (
-          <Text {...styles.badge}>{badge}</Text>
-        ) : (
-          <View {...styles.badgePlaceholder} />
-        )}
-        <View {...styles.cardHeading}>
-          <Text {...styles.cardTitle}>{title}</Text>
-          {description ? (
-            <Text {...styles.cardDescription}>{description}</Text>
-          ) : null}
+    <View {...styles.panel}>
+      <View {...styles.panelHeader}>
+        <Text {...styles.panelKicker}>{label}</Text>
+        <View {...styles.panelHeading}>
+          <Text {...styles.panelTitle}>{title}</Text>
+          {hint ? <Text {...styles.panelHint}>{hint}</Text> : null}
         </View>
       </View>
-      <View {...styles.cardRule} />
-      <View {...styles.cardBody}>{children}</View>
+      <View {...styles.panelHairline} />
+      <View {...styles.panelBody}>{children}</View>
     </View>
   );
 }
 
 function GainKnob() {
   const { stringValue, currentValue } = useParameter(ParamIds.DemoGain);
-  const drawRotary = useMemo(
-    () => Slider.drawRotary(t.border, t.accent),
-    []
-  );
+  const drawRotary = useMemo(() => Slider.drawRotary(t.hairline, t.accent), []);
   return (
-    <View {...styles.knobRow}>
+    <View {...styles.knobCol}>
+      <Text {...styles.controlTag}>GAIN</Text>
       <ParameterSlider
         paramId={ParamIds.DemoGain}
         value={currentValue}
@@ -77,10 +72,7 @@ function GainKnob() {
         mapDragGestureToValue={Slider.rotaryGestureMap}
         {...styles.rotary}
       />
-      <View {...styles.knobMeta}>
-        <Text {...styles.controlLabel}>Gain</Text>
-        <Label value={stringValue} {...styles.controlValue} />
-      </View>
+      <Label value={stringValue} {...styles.readout} />
     </View>
   );
 }
@@ -88,14 +80,14 @@ function GainKnob() {
 function DepthSlider() {
   const { stringValue, currentValue } = useParameter(ParamIds.DemoDepth);
   const drawH = useMemo(
-    () => Slider.drawLinearHorizontal(t.border, t.accent),
+    () => Slider.drawLinearHorizontal(t.hairline, t.accent),
     []
   );
   return (
-    <View {...styles.depthBlock}>
-      <View {...styles.depthLabels}>
-        <Text {...styles.controlLabel}>Depth</Text>
-        <Label value={stringValue} {...styles.controlValue} />
+    <View {...styles.depthCol}>
+      <View {...styles.depthHeader}>
+        <Text {...styles.controlTag}>DEPTH</Text>
+        <Label value={stringValue} {...styles.readoutSmall} />
       </View>
       <ParameterSlider
         paramId={ParamIds.DemoDepth}
@@ -109,16 +101,16 @@ function DepthSlider() {
 }
 
 export default function App() {
-  const [inputValue, setInputValue] = useState("Try editing this field");
+  const [inputValue, setInputValue] = useState("Signal chain · rename me");
   const [clicks, setClicks] = useState(0);
   const [tickPhase, setTickPhase] = useState(0);
   const [lastEvent, setLastEvent] = useState("—");
-  const [canvasSize, setCanvasSize] = useState({ width: 640, height: 56 });
+  const [canvasSize, setCanvasSize] = useState({ width: 640, height: 72 });
 
   useEffect(() => {
     const onTick = (phase) => setTickPhase(phase);
     const onParam = (index, id, def, val, str) => {
-      setLastEvent(`${id} → ${str}`);
+      setLastEvent(`${id}  ${str}`);
     };
     EventBridge.addListener("playgroundTick", onTick);
     EventBridge.addListener("parameterValueChange", onParam);
@@ -132,38 +124,40 @@ export default function App() {
     (ctx) => {
       const w = Math.max(32, Math.floor(canvasSize.width));
       const h = Math.max(24, Math.floor(canvasSize.height));
-      ctx.fillStyle = t.surfaceHover;
+      ctx.fillStyle = t.panelDeep;
       ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = t.border;
+      ctx.strokeStyle = t.rule;
       ctx.lineWidth = 1;
       ctx.strokeRect(0, 0, w, h);
 
       const mid = h * 0.5;
-      const amp = Math.min(h * 0.35, 14);
+      const amp = Math.min(h * 0.36, 16);
       ctx.strokeStyle = t.accent;
       ctx.lineWidth = 2;
       ctx.beginPath();
       for (let x = 0; x <= w; x += 2) {
-        const tNorm = (x / Math.max(w, 1)) * Math.PI * 2 + tickPhase;
-        const y = mid + Math.sin(tNorm) * amp;
+        const phase = (x / Math.max(w, 1)) * Math.PI * 2 + tickPhase;
+        const y = mid + Math.sin(phase) * amp;
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.stroke();
 
-      ctx.strokeStyle = t.borderSubtle;
+      ctx.strokeStyle = t.hairline;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(10, mid);
-      ctx.lineTo(w - 10, mid);
+      ctx.moveTo(8, mid);
+      ctx.lineTo(w - 8, mid);
       ctx.stroke();
     },
     [tickPhase, canvasSize.width, canvasSize.height]
   );
 
   const onCanvasMeasure = useCallback((e) => {
-    if (e.width > 0 && e.height > 0) {
-      setCanvasSize({ width: e.width, height: e.height });
+    const w = typeof e.width === "number" ? e.width : 0;
+    const h = typeof e.height === "number" ? e.height : 0;
+    if (w >= 1 && h >= 1) {
+      setCanvasSize({ width: w, height: h });
     }
   }, []);
 
@@ -171,11 +165,12 @@ export default function App() {
     const rowStyle = index % 2 === 0 ? styles.listRow : styles.listRowAlt;
     return (
       <View {...layout} {...rowStyle}>
+        <View {...styles.listAccent} />
         <View {...styles.listIndex}>
           <Text {...styles.listIndexText}>{index + 1}</Text>
         </View>
         <Text {...styles.listText}>{item.label}</Text>
-        <Text {...styles.listHint}>virtualized</Text>
+        <Text {...styles.listMeta}>virtual</Text>
       </View>
     );
   }, []);
@@ -186,129 +181,151 @@ export default function App() {
         {...styles.scroll}
         overflow="scroll"
         scrollbar-width="thin"
-        scrollbar-color={`${t.accent} ${t.surface}`}
+        scrollbar-color={`${t.accent} ${t.panel}`}
       >
         <ScrollView.ContentView {...styles.scrollInner}>
-          <View {...styles.hero}>
-            <Text {...styles.heroEyebrow}>React-JUCE</Text>
-            <Text {...styles.heroTitle}>Playground</Text>
-            <Text {...styles.heroSubtitle}>
-              Production-style reference for layout, widgets, and the native
-              bridge — parameters, events, and canvas.
-            </Text>
-            <View {...styles.heroRule} />
+          <View {...styles.chrome}>
+            <View {...styles.chromeLeft}>
+              <View {...styles.mark}>
+                <Text {...styles.markText}>RJ</Text>
+              </View>
+              <View {...styles.chromeTitles}>
+                <Text {...styles.chromeTitle}>Playground</Text>
+                <Text {...styles.chromeSub}>
+                  React-JUCE · layout, bridge, canvas, lists
+                </Text>
+              </View>
+            </View>
+            <View {...styles.chip}>
+              <Text {...styles.chipText}>LAB</Text>
+            </View>
           </View>
 
-          <View {...styles.statusPill}>
-            <View {...styles.statusDot} />
-            <Text {...styles.statusText}>Last event</Text>
-            <Text {...styles.statusEm}>{lastEvent}</Text>
+          <View {...styles.telemetry}>
+            <Text {...styles.telemetryLabel}>BRIDGE</Text>
+            <Text {...styles.telemetryValue}>{lastEvent}</Text>
           </View>
 
-          <SectionCard
-            badge="MEDIA"
-            title="Image"
-            description="Remote fetch and webpack-bundled raster assets."
+          <Panel
+            label="VISUAL"
+            title="Assets & scope"
+            hint="Network image, bundled PNG, and timer-driven canvas in one panel."
           >
-            <View {...styles.twoCol}>
-              <View {...styles.mediaColLeft}>
-                <View {...styles.mediaFrame}>
+            <View {...styles.split}>
+              <View {...styles.splitLeft}>
+                <Text {...styles.splitCaption}>Remote URL</Text>
+                <View {...styles.assetWell}>
                   <Image
                     source="https://raw.githubusercontent.com/bobicloudvision/react-juce/master/examples/GainPlugin/jsui/src/logo.png"
-                    {...styles.imageInFrame}
+                    {...styles.assetImg}
                   />
                 </View>
-                <Text {...styles.caption}>Remote URL</Text>
-              </View>
-              <View {...styles.mediaColRight}>
-                <View {...styles.mediaFrame}>
-                  <Image source={logoSrc} {...styles.imageInFrame} />
+                <Text {...styles.splitCaption}>Bundled</Text>
+                <View {...styles.assetWell}>
+                  <Image source={logoSrc} {...styles.assetImg} />
                 </View>
-                <Text {...styles.caption}>Bundled (require)</Text>
+              </View>
+              <View {...styles.splitRight}>
+                <Text {...styles.splitCaption}>Canvas · 30 Hz tick</Text>
+                <View {...styles.canvasShell}>
+                  <Canvas
+                    {...styles.canvasInner}
+                    animate={true}
+                    onMeasure={onCanvasMeasure}
+                    onDraw={onDrawWave}
+                  />
+                </View>
               </View>
             </View>
-          </SectionCard>
+          </Panel>
 
-          <SectionCard
-            badge="CANVAS"
-            title="Animated canvas"
-            description="Waveform driven by the native playgroundTick timer (30 Hz)."
+          <Panel
+            label="INPUT"
+            title="Controls & copy"
+            hint="Button, Text styles, and TextInput."
           >
-            <Canvas
-              {...styles.canvas}
-              animate={true}
-              onMeasure={onCanvasMeasure}
-              onDraw={onDrawWave}
-            />
-          </SectionCard>
-
-          <SectionCard
-            badge="INPUT"
-            title="Interaction"
-            description="Button state, typography, and single-line text entry."
-          >
-            <Button
-              {...styles.btnPrimary}
-              onClick={() => setClicks((c) => c + 1)}
-            >
-              <Text {...styles.btnPrimaryLabel}>
-                Primary action · {clicks} tap{clicks === 1 ? "" : "s"}
-              </Text>
-            </Button>
-
-            <View {...styles.typeSamples}>
-              <Text {...styles.body}>
-                Body — readable default copy for descriptions and labels.
-              </Text>
-              <Text {...styles.bold} fontStyle={Text.FontStyleFlags.bold}>
-                Emphasis — bold for headings inside copy.
-              </Text>
-              <Text {...styles.italic} fontStyle={Text.FontStyleFlags.italic}>
-                Italic — secondary emphasis or citations.
-              </Text>
+            <View {...styles.actionRow}>
+              <Button
+                {...styles.btnGhost}
+                onClick={() => setClicks((c) => c + 1)}
+              >
+                <Text {...styles.btnGhostLabel}>Pulse · {clicks}</Text>
+              </Button>
+              <Button {...styles.btnSolid} onClick={() => setClicks(0)}>
+                <Text {...styles.btnSolidLabel}>Reset</Text>
+              </Button>
             </View>
 
-            <Text {...styles.fieldLabel}>Text field</Text>
+            <View {...styles.typeRow}>
+              <View {...styles.typeCol}>
+                <Text {...styles.typeLabel}>Body</Text>
+                <Text {...styles.typeBody}>
+                  Paragraph rhythm for descriptions and parameter copy.
+                </Text>
+              </View>
+              <View {...styles.typeCol}>
+                <Text {...styles.typeLabel}>Emphasis</Text>
+                <Text
+                  {...styles.typeStrong}
+                  fontStyle={Text.FontStyleFlags.bold}
+                >
+                  Section titles and key values.
+                </Text>
+              </View>
+              <View {...styles.typeCol}>
+                <Text {...styles.typeLabel}>Alt</Text>
+                <Text
+                  {...styles.typeItalic}
+                  fontStyle={Text.FontStyleFlags.italic}
+                >
+                  Hints, quotes, secondary lines.
+                </Text>
+              </View>
+            </View>
+
+            <Text {...styles.fieldLabel}>TEXT INPUT</Text>
             <TextInput
               value={inputValue}
               onInput={(e) => setInputValue(e.value)}
-              placeholder="Placeholder text"
+              placeholder="Placeholder…"
               {...styles.input}
             />
-          </SectionCard>
+          </Panel>
 
-          <SectionCard
-            badge="PARAMETERS"
-            title="DSP controls"
-            description="APVTS-linked rotary, linear slider, and bypass toggle."
+          <Panel
+            label="DSP"
+            title="Parameter strip"
+            hint="APVTS → EventBridge; rotary, linear slider, bypass."
           >
-            <View {...styles.paramGrid}>
+            <View {...styles.strip}>
               <GainKnob />
+              <View {...styles.stripDivider} />
               <DepthSlider />
             </View>
             <ParameterToggleButton
               paramId={ParamIds.DemoBypass}
-              {...styles.toggle}
+              {...styles.bypass}
             >
-              <Text {...styles.toggleText}>Bypass — dry signal (no gain)</Text>
+              <Text {...styles.bypassLabel}>Bypass — unity gain (dry)</Text>
             </ParameterToggleButton>
-          </SectionCard>
+          </Panel>
 
-          <SectionCard
-            badge="LIST"
+          <Panel
+            label="DATA"
             title="Virtualized list"
-            description="ListView inside ScrollView; only visible rows are mounted."
+            hint="ListView recycles rows; drag or scroll."
           >
             <ListView
               {...styles.listView}
               data={LIST_DATA}
               renderItem={listRenderItem}
-              itemHeight={40}
+              itemHeight={44}
               overflow="scroll"
               scroll-on-drag={true}
             />
-          </SectionCard>
+          </Panel>
 
+          <Text {...styles.footer}>React-JUCE Playground · reference UI</Text>
           <View {...styles.footerSpacer} />
         </ScrollView.ContentView>
       </ScrollView>
@@ -320,7 +337,7 @@ const styles = {
   root: {
     width: "100%",
     height: "100%",
-    backgroundColor: t.bgElevated,
+    backgroundColor: t.bg,
   },
   scroll: {
     width: "100%",
@@ -329,262 +346,323 @@ const styles = {
   },
   scrollInner: {
     flexDirection: "column",
-    padding: 24,
-    paddingTop: 20,
+    padding: 22,
+    paddingTop: 18,
     flexShrink: 0,
-    maxWidth: 720,
+    maxWidth: 920,
     alignSelf: "center",
     width: "100%",
   },
-  hero: {
-    marginBottom: 20,
-  },
-  heroEyebrow: {
-    color: t.accent,
-    fontSize: 11,
-    letterSpacing: 2.2,
-    fontStyle: Text.FontStyleFlags.bold,
-    marginBottom: 6,
-  },
-  heroTitle: {
-    color: t.text,
-    fontSize: 28,
-    fontStyle: Text.FontStyleFlags.bold,
-    marginBottom: 8,
-    lineSpacing: 1.15,
-  },
-  heroSubtitle: {
-    color: t.textSecondary,
-    fontSize: 14,
-    lineSpacing: 1.55,
-    maxWidth: 560,
-  },
-  heroRule: {
-    marginTop: 18,
-    height: 1,
-    width: "100%",
-    backgroundColor: t.border,
-  },
-  statusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: t.surface,
-    borderWidth: 1,
-    borderColor: t.border,
-    borderRadius: 8,
-    paddingLeft: 12,
-    paddingRight: 14,
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginBottom: 22,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: t.success,
-    marginRight: 10,
-  },
-  statusText: {
-    color: t.textMuted,
-    fontSize: 12,
-    marginRight: 8,
-  },
-  statusEm: {
-    color: t.textSecondary,
-    fontSize: 12,
-    fontStyle: Text.FontStyleFlags.bold,
-    flex: 1,
-  },
-  card: {
-    backgroundColor: t.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: t.border,
-    marginBottom: 18,
-  },
-  cardTop: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingTop: 16,
-    paddingLeft: 18,
-    paddingRight: 18,
-  },
-  badge: {
-    color: t.accent,
-    fontSize: 10,
-    fontStyle: Text.FontStyleFlags.bold,
-    letterSpacing: 1.4,
-    marginRight: 12,
-    marginTop: 3,
-    minWidth: 72,
-  },
-  badgePlaceholder: {
-    minWidth: 72,
-    marginRight: 12,
-  },
-  cardHeading: {
-    flex: 1,
-    flexDirection: "column",
-  },
-  cardTitle: {
-    color: t.text,
-    fontSize: 17,
-    fontStyle: Text.FontStyleFlags.bold,
-    marginBottom: 4,
-    lineSpacing: 1.2,
-  },
-  cardDescription: {
-    color: t.textMuted,
-    fontSize: 13,
-    lineSpacing: 1.45,
-  },
-  cardRule: {
-    height: 1,
-    backgroundColor: t.borderSubtle,
-    marginTop: 14,
-    marginLeft: 18,
-    marginRight: 18,
-  },
-  cardBody: {
-    padding: 18,
-    paddingTop: 16,
-    flexDirection: "column",
-  },
-  twoCol: {
+  chrome: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
+    alignItems: "center",
+    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderColor: t.hairline,
   },
-  mediaColLeft: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "stretch",
-    marginRight: 10,
-  },
-  mediaColRight: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "stretch",
-    marginLeft: 10,
-  },
-  mediaFrame: {
-    backgroundColor: t.surfaceHover,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: t.border,
-    padding: 14,
-    minHeight: 52,
-    justifyContent: "center",
+  chromeLeft: {
+    flexDirection: "row",
     alignItems: "center",
   },
-  imageInFrame: {
+  mark: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: t.accent,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+  },
+  markText: {
+    color: t.void,
+    fontSize: 13,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 0.5,
+  },
+  chromeTitles: {
+    flexDirection: "column",
+  },
+  chromeTitle: {
+    color: t.ink,
+    fontSize: 22,
+    fontStyle: Text.FontStyleFlags.bold,
+    lineSpacing: 1.1,
+  },
+  chromeSub: {
+    color: t.inkSoft,
+    fontSize: 12,
+    marginTop: 3,
+    lineSpacing: 1.4,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: t.accentMuted,
+    borderRadius: 6,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    backgroundColor: t.panelLift,
+  },
+  chipText: {
+    color: t.accentGlow,
+    fontSize: 10,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 2,
+  },
+  telemetry: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: t.panelDeep,
+    borderWidth: 1,
+    borderColor: t.hairline,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 18,
+  },
+  telemetryLabel: {
+    color: t.accentMuted,
+    fontSize: 10,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1.6,
+    marginRight: 12,
+    minWidth: 52,
+  },
+  telemetryValue: {
+    color: t.accentGlow,
+    fontSize: 12,
+    flex: 1,
+    fontStyle: Text.FontStyleFlags.bold,
+  },
+  panel: {
+    backgroundColor: t.panel,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: t.rule,
+    marginBottom: 16,
+  },
+  panelHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingTop: 14,
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  panelKicker: {
+    color: t.accent,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 2,
+    marginRight: 14,
+    marginTop: 4,
+    minWidth: 56,
+  },
+  panelHeading: {
+    flex: 1,
+    flexDirection: "column",
+  },
+  panelTitle: {
+    color: t.ink,
+    fontSize: 16,
+    fontStyle: Text.FontStyleFlags.bold,
+    marginBottom: 4,
+  },
+  panelHint: {
+    color: t.inkFaint,
+    fontSize: 12,
+    lineSpacing: 1.45,
+  },
+  panelHairline: {
+    height: 1,
+    backgroundColor: t.hairline,
+    marginTop: 12,
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  panelBody: {
+    padding: 16,
+    flexDirection: "column",
+  },
+  split: {
+    flexDirection: "row",
+    alignItems: "stretch",
     width: "100%",
-    height: 32,
-    placement: Image.PlacementFlags.centred,
   },
-  caption: {
-    color: t.textMuted,
-    fontSize: 11,
-    marginTop: 8,
-    textAlign: "center",
+  splitLeft: {
+    flex: 1,
+    flexDirection: "column",
+    marginRight: 12,
   },
-  canvas: {
-    width: "100%",
-    height: 64,
-    minHeight: 64,
-    flexShrink: 0,
+  splitRight: {
+    flex: 1,
+    flexDirection: "column",
+    marginLeft: 12,
   },
-  btnPrimary: {
+  splitCaption: {
+    color: t.inkFaint,
+    fontSize: 10,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1,
+    marginBottom: 6,
+  },
+  assetWell: {
+    backgroundColor: t.panelDeep,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: t.hairline,
+    padding: 12,
+    marginBottom: 12,
     justifyContent: "center",
     alignItems: "center",
     minHeight: 44,
-    borderRadius: 8,
-    borderWidth: 0,
-    backgroundColor: t.accent,
+  },
+  assetImg: {
+    width: "100%",
+    height: 28,
+    placement: Image.PlacementFlags.centred,
+  },
+  canvasShell: {
+    width: "100%",
+    flexShrink: 0,
+    flexDirection: "column",
+    alignItems: "stretch",
+    backgroundColor: t.panelDeep,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: t.hairline,
+  },
+  canvasInner: {
+    width: "100%",
+    height: 88,
+    flexShrink: 0,
+  },
+  actionRow: {
+    flexDirection: "row",
     marginBottom: 18,
   },
-  btnPrimaryLabel: {
-    color: "#0a0d12",
-    fontSize: 14,
+  btnGhost: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: t.accentMuted,
+    backgroundColor: t.panelLift,
+    marginRight: 10,
+  },
+  btnGhostLabel: {
+    color: t.accentGlow,
+    fontSize: 13,
     fontStyle: Text.FontStyleFlags.bold,
   },
-  typeSamples: {
+  btnSolid: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 0,
+    backgroundColor: t.accent,
+  },
+  btnSolidLabel: {
+    color: t.void,
+    fontSize: 13,
+    fontStyle: Text.FontStyleFlags.bold,
+  },
+  typeRow: {
+    flexDirection: "row",
     marginBottom: 16,
   },
-  body: {
-    color: t.textSecondary,
-    fontSize: 14,
-    lineSpacing: 1.5,
-    marginBottom: 8,
+  typeCol: {
+    flex: 1,
+    flexDirection: "column",
+    marginRight: 10,
   },
-  bold: {
-    color: t.text,
-    fontSize: 14,
-    lineSpacing: 1.5,
-    marginBottom: 8,
+  typeLabel: {
+    color: t.inkFaint,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1.2,
+    marginBottom: 6,
   },
-  italic: {
-    color: t.warning,
-    fontSize: 14,
-    lineSpacing: 1.5,
-    marginBottom: 8,
+  typeBody: {
+    color: t.inkSoft,
+    fontSize: 12,
+    lineSpacing: 1.45,
+  },
+  typeStrong: {
+    color: t.ink,
+    fontSize: 12,
+    lineSpacing: 1.45,
+  },
+  typeItalic: {
+    color: t.warn,
+    fontSize: 12,
+    lineSpacing: 1.45,
   },
   fieldLabel: {
-    color: t.textMuted,
-    fontSize: 11,
+    color: t.inkFaint,
+    fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
-    letterSpacing: 0.8,
+    letterSpacing: 1.4,
     marginBottom: 6,
   },
   input: {
     width: "100%",
-    minHeight: 40,
-    color: t.text,
-    fontSize: 14,
-    backgroundColor: t.surfaceHover,
-    borderRadius: 8,
+    minHeight: 42,
+    color: t.ink,
+    fontSize: 13,
+    backgroundColor: t.panelDeep,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.hairline,
     paddingLeft: 12,
     paddingRight: 12,
     "outline-color": t.accent,
-    "placeholder-color": t.textMuted,
+    "placeholder-color": t.inkFaint,
   },
-  paramGrid: {
-    flexDirection: "column",
+  strip: {
+    flexDirection: "row",
+    alignItems: "flex-end",
     marginBottom: 14,
   },
-  knobRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
+  stripDivider: {
+    width: 1,
+    alignSelf: "stretch",
+    backgroundColor: t.hairline,
+    marginLeft: 14,
+    marginRight: 14,
+    marginBottom: 8,
   },
-  knobMeta: {
-    flex: 1,
+  knobCol: {
     flexDirection: "column",
-    justifyContent: "center",
+    alignItems: "center",
+    minWidth: 100,
   },
-  controlLabel: {
-    color: t.textMuted,
-    fontSize: 11,
+  controlTag: {
+    color: t.inkFaint,
+    fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
-    letterSpacing: 0.6,
-    marginBottom: 4,
-  },
-  controlValue: {
-    color: t.text,
+    letterSpacing: 1.4,
+    marginBottom: 6,
   },
   rotary: {
-    width: 76,
-    height: 76,
-    marginRight: 18,
+    width: 80,
+    height: 80,
   },
-  depthBlock: {
+  readout: {
+    marginTop: 8,
+  },
+  readoutSmall: {},
+  depthCol: {
+    flex: 1,
     flexDirection: "column",
-    marginBottom: 4,
+    justifyContent: "flex-end",
   },
-  depthLabels: {
+  depthHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
@@ -593,75 +671,87 @@ const styles = {
   },
   horizontalSlider: {
     width: "100%",
-    height: 30,
+    height: 32,
   },
-  toggle: {
+  bypass: {
     justifyContent: "center",
     alignItems: "center",
-    minHeight: 46,
-    borderRadius: 8,
+    minHeight: 48,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: t.border,
-    backgroundColor: t.surfaceHover,
-    marginTop: 4,
+    borderColor: t.hairline,
+    backgroundColor: t.panelLift,
   },
-  toggleText: {
-    color: t.text,
-    fontSize: 14,
+  bypassLabel: {
+    color: t.ink,
+    fontSize: 13,
+    fontStyle: Text.FontStyleFlags.bold,
   },
   listView: {
     width: "100%",
-    height: 220,
-    minHeight: 220,
+    height: 260,
+    minHeight: 260,
     flexShrink: 0,
-    backgroundColor: t.surfaceHover,
-    borderRadius: 8,
+    backgroundColor: t.panelDeep,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.hairline,
   },
   listRow: {
     width: "100%",
-    height: 40,
+    height: 44,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 4,
     paddingRight: 12,
     borderBottomWidth: 1,
-    borderColor: t.borderSubtle,
-    backgroundColor: t.surfaceHover,
+    borderColor: t.hairline,
+    backgroundColor: t.panelDeep,
   },
   listRowAlt: {
     width: "100%",
-    height: 40,
+    height: 44,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 4,
     paddingRight: 12,
     borderBottomWidth: 1,
-    borderColor: t.borderSubtle,
-    backgroundColor: "#151c27",
+    borderColor: t.hairline,
+    backgroundColor: "#141210",
+  },
+  listAccent: {
+    width: 3,
+    alignSelf: "stretch",
+    backgroundColor: t.accentMuted,
+    marginRight: 10,
   },
   listIndex: {
-    width: 36,
+    width: 32,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
   },
   listIndexText: {
-    color: t.textMuted,
-    fontSize: 11,
+    color: t.inkFaint,
+    fontSize: 10,
     fontStyle: Text.FontStyleFlags.bold,
   },
   listText: {
-    color: t.text,
+    color: t.inkSoft,
     fontSize: 13,
     flex: 1,
   },
-  listHint: {
-    color: t.textMuted,
+  listMeta: {
+    color: t.accentMuted,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1,
+  },
+  footer: {
+    color: t.inkFaint,
     fontSize: 10,
+    textAlign: "center",
+    marginTop: 8,
   },
   footerSpacer: {
-    height: 32,
+    height: 28,
   },
 };

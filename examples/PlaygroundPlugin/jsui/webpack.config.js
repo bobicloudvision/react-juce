@@ -9,8 +9,7 @@ const reactJuceSrc = path.join(
   __dirname,
   "../../../packages/react-juce/src/index.tsx"
 );
-const reactJuceDownlevelDeps =
-  /[\\/]packages[\\/]react-juce[\\/]node_modules[\\/]matrix-js[\\/]/;
+const reactJuceDownlevelDeps = /[\\/]packages[\\/]react-juce[\\/]node_modules[\\/]matrix-js[\\/]/;
 
 module.exports = (env, argv) => {
   const production = argv.mode === "production";
