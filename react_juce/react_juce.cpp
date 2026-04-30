@@ -30,6 +30,8 @@
 #include "core/ReactApplicationRoot.cpp"
 #include "core/ShadowView.cpp"
 #include "core/TextInputView.cpp"
+#include "core/ComboBoxView.cpp"
+#include "core/ComboBoxLookAndFeel.cpp"
 #include "core/TextShadowView.cpp"
 #include "core/View.cpp"
 #include "core/ViewManager.cpp"

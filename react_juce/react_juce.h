@@ -55,6 +55,7 @@
 #include "core/TextShadowView.h"
 #include "core/TextView.h"
 #include "core/TextInputView.h"
+#include "core/ComboBoxView.h"
 #include "core/Utils.h"
 #include "core/View.h"
 #include "core/ViewManager.h"

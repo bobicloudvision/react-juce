@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Canvas,
+  ComboBox,
   EventBridge,
   Image,
   ListView,
@@ -12,7 +13,6 @@ import {
   View,
 } from "react-juce";
 import Label from "./Label";
-import Dropdown from "./Dropdown";
 import Modal, { ModalPrimaryButton } from "./Modal";
 import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
@@ -511,12 +511,13 @@ export default function App() {
                 {...styles.input}
               />
 
-              <Text {...styles.fieldLabelAfterBlock}>DROPDOWN</Text>
-              <Dropdown
-                options={PRESET_OPTIONS}
+              <Text {...styles.fieldLabelAfterBlock}>COMBO BOX</Text>
+              <ComboBox
+                items={PRESET_OPTIONS}
                 value={preset}
-                onChange={setPreset}
+                onChange={(e) => setPreset(e.value)}
                 placeholder="Choose preset…"
+                {...styles.combo}
               />
             </Panel>
           ) : null}
@@ -1109,6 +1110,32 @@ const styles = {
     "highlight-color": t.inputSelection,
     "highlighted-text-color": t.ink,
     "placeholder-color": t.inkFaint,
+  },
+  combo: {
+    ...ff,
+    width: "100%",
+    minHeight: 40,
+    color: t.ink,
+    fontSize: fs(13),
+    "background-color": t.panelDeep,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: t.hairline,
+    "arrow-color": t.inkSoft,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
+    justification: Text.JustificationFlags.centredLeft,
+    "menu-background-color": t.panelLift,
+    "menu-color": t.ink,
+    "menu-highlight-background-color": t.inputSelection,
+    "menu-highlight-color": t.ink,
+    "menu-border-color": t.hairline,
+    "menu-border-width": 1,
+    "menu-border-radius": 6,
+    "menu-font-size": fs(12),
+    "menu-item-height": Math.round(fs(12) * 1.4),
   },
   knobGalleryHint: {
     ...ff,
