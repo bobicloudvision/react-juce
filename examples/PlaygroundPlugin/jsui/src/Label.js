@@ -12,6 +12,7 @@ const Label = ({ value, ...props }) => {
 
 const styles = {
   labelText: {
+    ...theme.fontFace,
     color: theme.ink,
     fontSize: 14.0,
     lineSpacing: 1.4,

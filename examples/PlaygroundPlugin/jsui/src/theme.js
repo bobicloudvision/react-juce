@@ -24,8 +24,12 @@ const base = {
   inputSelection: "#1e3d52",
 };
 
+/** Spread onto `<Text>` / `<TextInput>` styles — Outfit is bundled via FontRegistry in the plugin. */
+const outfit = Object.freeze({ "font-family": "Outfit" });
+
 export const theme = Object.freeze({
   ...base,
   bg: `linear-gradient(168deg, ${base.stone140} 0%, ${base.stone0b} 42%, ${base.stone101} 100%)`,
   surfaceListAlt: base.stone140,
+  fontFace: outfit,
 });

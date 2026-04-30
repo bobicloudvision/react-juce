@@ -69,6 +69,8 @@ The font family name with which to draw the text
 | ------ | -------- | ----------------------------------------------------------------------- |
 | string | No       | [Partial](https://developer.mozilla.org/en-US/docs/Web/CSS/font-family) |
 
+Bundled typefaces must be registered from C++ (`FontRegistry`); see [Fonts](../fonts.md).
+
 #### fontStyle
 
 Sets whether the text should be rendered bold, italics, or normal.

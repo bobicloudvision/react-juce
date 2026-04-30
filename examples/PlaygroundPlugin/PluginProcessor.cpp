@@ -1,7 +1,24 @@
 #include "PluginProcessor.h"
 
+#include <BinaryData.h>
+
+#include "core/FontRegistry.h"
+
 namespace
 {
+void registerPlaygroundBundledFonts()
+{
+    static bool done = false;
+    if (done)
+        return;
+    done = true;
+    auto& fonts = reactjuce::FontRegistry::getInstance();
+    fonts.registerFontMemory(BinaryData::InterRegular_ttf,
+                            (size_t)BinaryData::InterRegular_ttfSize);
+    fonts.registerFontMemory(BinaryData::OutfitRegular_ttf,
+                            (size_t)BinaryData::OutfitRegular_ttfSize);
+}
+
 AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
     return {
@@ -142,6 +159,8 @@ bool PlaygroundPluginAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* PlaygroundPluginAudioProcessor::createEditor()
 {
+    registerPlaygroundBundledFonts();
+
     File sourceDir(PLAYGROUNDPLUGIN_SOURCE_DIR);
     File bundle = sourceDir.getChildFile("jsui/build/js/main.js");
 

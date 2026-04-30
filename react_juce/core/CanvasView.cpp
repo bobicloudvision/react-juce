@@ -8,6 +8,7 @@
 */
 
 #include "CanvasView.h"
+#include "FontRegistry.h"
 
 namespace reactjuce
 {
@@ -148,7 +149,20 @@ namespace reactjuce
                 }
             }
 
-            ctx.properties.font = juce::Font(typeface, fontSize, flags);
+            typeface = FontRegistry::normalizeFamilyString(typeface);
+
+            if (auto tf = FontRegistry::getInstance().lookupTypeface(typeface))
+            {
+                juce::Font f(tf);
+                f.setHeight(fontSize);
+                f.setBold((flags & juce::Font::bold) != 0);
+                f.setItalic((flags & juce::Font::italic) != 0);
+                ctx.properties.font = f;
+            }
+            else
+            {
+                ctx.properties.font = juce::Font(typeface, fontSize, flags);
+            }
         }
 
         void setTextAlign(CanvasView::CanvasContext           &ctx,

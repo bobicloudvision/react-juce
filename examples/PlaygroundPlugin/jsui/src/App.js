@@ -25,6 +25,9 @@ import {
 import { ParamIds, useParameter } from "./ParameterValueContext";
 import { theme as t } from "./theme";
 
+/** Default UI typeface (Outfit) — spread onto text styles; typography demos override for Inter / default sans. */
+const ff = t.fontFace;
+
 const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
   id: i,
   label: `Row ${String(i + 1).padStart(3, "0")}`,
@@ -33,11 +36,15 @@ const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
 /** Example categories — add new tabs here and render the matching block in `App`. */
 const EXAMPLE_TABS = [
   { id: "visual", label: "Visual" },
+  { id: "typography", label: "Typography" },
   { id: "controls", label: "Controls" },
   { id: "knobs", label: "Knobs" },
   { id: "dsp", label: "DSP" },
   { id: "data", label: "Lists" },
 ];
+
+/** Same phrase in three fonts — easiest way to see registration vs default sans. */
+const FONT_COMPARE_SAMPLE = "The quick brown fox — AaGg 0123456789";
 
 const logoSrc = require("./logo.png");
 
@@ -177,6 +184,10 @@ export default function App() {
   const [tickPhase, setTickPhase] = useState(0);
   const [lastEvent, setLastEvent] = useState("—");
   const [canvasSize, setCanvasSize] = useState({ width: 640, height: 72 });
+  const [typographyCanvasSize, setTypographyCanvasSize] = useState({
+    width: 400,
+    height: 72,
+  });
 
   useEffect(() => {
     const onTick = (phase) => setTickPhase(phase);
@@ -232,6 +243,43 @@ export default function App() {
     }
   }, []);
 
+  const onTypographyCanvasMeasure = useCallback((e) => {
+    const w = typeof e.width === "number" ? e.width : 0;
+    const h = typeof e.height === "number" ? e.height : 0;
+    if (w >= 1 && h >= 1) {
+      setTypographyCanvasSize({ width: w, height: h });
+    }
+  }, []);
+
+  const onDrawTypographySample = useCallback(
+    (ctx) => {
+      const w = Math.max(80, Math.floor(typographyCanvasSize.width));
+      const h = Math.max(64, Math.floor(typographyCanvasSize.height));
+      ctx.fillStyle = t.panelDeep;
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = t.hairline;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, 0, w, h);
+      const y1 = Math.min(18, h * 0.28);
+      const y2 = Math.min(34, h * 0.52);
+      const y3 = Math.min(50, h * 0.76);
+      ctx.font = "13px Inter";
+      ctx.fillStyle = t.accentGlow;
+      ctx.fillText("Inter — 13px canvas (FontRegistry)", 12, y1);
+      ctx.font = "13px Outfit";
+      ctx.fillStyle = t.accent;
+      ctx.fillText("Outfit — 13px canvas (FontRegistry)", 12, y2);
+      ctx.font = "11px Inter";
+      ctx.fillStyle = t.inkSoft;
+      ctx.fillText(
+        "Same registry as <Text font-family Inter | Outfit>",
+        12,
+        y3
+      );
+    },
+    [typographyCanvasSize.width, typographyCanvasSize.height]
+  );
+
   const listRenderItem = useCallback((item, index, layout) => {
     const rowStyle = index % 2 === 0 ? styles.listRow : styles.listRowAlt;
     return (
@@ -263,7 +311,7 @@ export default function App() {
               <View {...styles.chromeTitles}>
                 <Text {...styles.chromeTitle}>Playground</Text>
                 <Text {...styles.chromeSub}>
-                  Tabs switch example groups · bridge & params stay live
+                  Global UI font: Outfit (bundled) · bridge & params stay live
                 </Text>
               </View>
             </View>
@@ -317,11 +365,112 @@ export default function App() {
             </Panel>
           ) : null}
 
+          {activeExampleTab === "typography" ? (
+            <Panel
+              label="TYPE"
+              title="Fonts & typography"
+              hint="Bundled TTFs register before JS loads; font-family is trimmed (quotes, font stacks)."
+            >
+              <Text {...styles.typSectionLabel}>SIDE-BY-SIDE (SAME TEXT)</Text>
+              <Text {...styles.typCompareHint}>
+                If bundled fonts load, Inter and Outfit diverge clearly from the
+                default JUCE sans below.
+              </Text>
+              <Text {...styles.typCompareTag}>
+                Default sans — no font-family
+              </Text>
+              <Text {...styles.typCompareDefault}>{FONT_COMPARE_SAMPLE}</Text>
+              <Text {...styles.typCompareTag}>Inter (BinaryData)</Text>
+              <Text {...styles.typCompareInter}>{FONT_COMPARE_SAMPLE}</Text>
+              <Text {...styles.typCompareTag}>Outfit (BinaryData)</Text>
+              <Text {...styles.typCompareOutfit}>{FONT_COMPARE_SAMPLE}</Text>
+
+              <View {...styles.typSpacer} />
+
+              <Text {...styles.typSectionLabel}>BUNDLED · INTER</Text>
+              <Text {...styles.typHero}>Inter — display</Text>
+              <Text {...styles.typLead}>
+                Inter supports UI density: rhythm for descriptions, parameter
+                labels, and long plugin copy. Registered from TTF before the JS
+                bundle loads.
+              </Text>
+              <Text {...styles.typCaption}>
+                Caption 11px · metrics · secondary hints
+              </Text>
+
+              <View {...styles.typSpacer} />
+
+              <Text {...styles.typSectionLabel}>BUNDLED · OUTFIT</Text>
+              <Text {...styles.typHeroOutfit}>Outfit — display</Text>
+              <Text {...styles.typLeadOutfit}>
+                Outfit (OFL): geometric sans for headings and marketing-style UI
+                copy alongside Inter body text.
+              </Text>
+              <Text {...styles.typCaptionOutfit}>
+                Caption 11px · secondary · paired with Inter
+              </Text>
+
+              <View {...styles.typSpacer} />
+
+              <Text {...styles.typSectionLabel}>
+                DEFAULT SANS (NO FONT-FAMILY)
+              </Text>
+              <Text {...styles.typDefaultSans}>
+                JUCE default sans — compare weight and width against Inter and
+                Outfit above.
+              </Text>
+
+              <View {...styles.typSpacer} />
+
+              <Text {...styles.typSectionLabel}>STYLES</Text>
+              <View {...styles.typeRow}>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Body</Text>
+                  <Text {...styles.typBodyInter}>
+                    Body Inter 12px — paragraph rhythm for descriptions.
+                  </Text>
+                </View>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Bold</Text>
+                  <Text
+                    {...styles.typBoldInter}
+                    fontStyle={Text.FontStyleFlags.bold}
+                  >
+                    Section titles and key values.
+                  </Text>
+                </View>
+                <View {...styles.typeCol}>
+                  <Text {...styles.typeLabel}>Italic</Text>
+                  <Text
+                    {...styles.typItalicInter}
+                    fontStyle={Text.FontStyleFlags.italic}
+                  >
+                    Hints, quotes, secondary lines.
+                  </Text>
+                </View>
+              </View>
+
+              <Text {...styles.typSectionLabel}>CANVAS TEXT</Text>
+              <Text {...styles.typCanvasHint}>
+                fillText uses the same registry when the CSS-like font string
+                includes the family name.
+              </Text>
+              <View {...styles.typographyCanvasShell}>
+                <Canvas
+                  {...styles.typographyCanvasInner}
+                  animate={false}
+                  onMeasure={onTypographyCanvasMeasure}
+                  onDraw={onDrawTypographySample}
+                />
+              </View>
+            </Panel>
+          ) : null}
+
           {activeExampleTab === "controls" ? (
             <Panel
               label="INPUT"
               title="Controls & copy"
-              hint="Button, Text styles, and TextInput."
+              hint="Buttons and TextInput."
             >
               <View {...styles.actionRow}>
                 <Button
@@ -333,33 +482,6 @@ export default function App() {
                 <Button {...styles.btnSolid} onClick={() => setClicks(0)}>
                   <Text {...styles.btnSolidLabel}>Reset</Text>
                 </Button>
-              </View>
-
-              <View {...styles.typeRow}>
-                <View {...styles.typeCol}>
-                  <Text {...styles.typeLabel}>Body</Text>
-                  <Text {...styles.typeBody}>
-                    Paragraph rhythm for descriptions and parameter copy.
-                  </Text>
-                </View>
-                <View {...styles.typeCol}>
-                  <Text {...styles.typeLabel}>Emphasis</Text>
-                  <Text
-                    {...styles.typeStrong}
-                    fontStyle={Text.FontStyleFlags.bold}
-                  >
-                    Section titles and key values.
-                  </Text>
-                </View>
-                <View {...styles.typeCol}>
-                  <Text {...styles.typeLabel}>Alt</Text>
-                  <Text
-                    {...styles.typeItalic}
-                    fontStyle={Text.FontStyleFlags.italic}
-                  >
-                    Hints, quotes, secondary lines.
-                  </Text>
-                </View>
               </View>
 
               <Text {...styles.fieldLabel}>TEXT INPUT</Text>
@@ -462,6 +584,7 @@ const styles = {
     marginRight: 14,
   },
   markText: {
+    ...ff,
     color: t.void,
     fontSize: 13,
     fontStyle: Text.FontStyleFlags.bold,
@@ -471,12 +594,14 @@ const styles = {
     flexDirection: "column",
   },
   chromeTitle: {
+    ...ff,
     color: t.ink,
     fontSize: 22,
     fontStyle: Text.FontStyleFlags.bold,
     lineSpacing: 1.1,
   },
   chromeSub: {
+    ...ff,
     color: t.inkSoft,
     fontSize: 12,
     marginTop: 3,
@@ -493,6 +618,7 @@ const styles = {
     backgroundColor: t.panelLift,
   },
   chipText: {
+    ...ff,
     color: t.accentGlow,
     fontSize: 10,
     fontStyle: Text.FontStyleFlags.bold,
@@ -509,6 +635,7 @@ const styles = {
     marginBottom: 18,
   },
   telemetryLabel: {
+    ...ff,
     color: t.accentMuted,
     fontSize: 10,
     fontStyle: Text.FontStyleFlags.bold,
@@ -517,6 +644,7 @@ const styles = {
     minWidth: 52,
   },
   telemetryValue: {
+    ...ff,
     color: t.accentGlow,
     fontSize: 12,
     flex: 1,
@@ -530,6 +658,7 @@ const styles = {
     borderColor: t.hairline,
   },
   tabBarKicker: {
+    ...ff,
     color: t.accentMuted,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -572,11 +701,13 @@ const styles = {
     backgroundColor: t.panelLift,
   },
   tabLabel: {
+    ...ff,
     color: t.inkSoft,
     fontSize: 12,
     fontStyle: Text.FontStyleFlags.bold,
   },
   tabLabelOn: {
+    ...ff,
     color: t.accentGlow,
     fontSize: 12,
     fontStyle: Text.FontStyleFlags.bold,
@@ -596,6 +727,7 @@ const styles = {
     paddingRight: 16,
   },
   panelKicker: {
+    ...ff,
     color: t.accent,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -609,12 +741,14 @@ const styles = {
     flexDirection: "column",
   },
   panelTitle: {
+    ...ff,
     color: t.ink,
     fontSize: 16,
     fontStyle: Text.FontStyleFlags.bold,
     marginBottom: 4,
   },
   panelHint: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 12,
     lineSpacing: 1.45,
@@ -646,6 +780,7 @@ const styles = {
     marginLeft: 12,
   },
   splitCaption: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 10,
     fontStyle: Text.FontStyleFlags.bold,
@@ -699,6 +834,7 @@ const styles = {
     marginRight: 10,
   },
   btnGhostLabel: {
+    ...ff,
     color: t.accentGlow,
     fontSize: 13,
     fontStyle: Text.FontStyleFlags.bold,
@@ -713,6 +849,7 @@ const styles = {
     backgroundColor: t.accent,
   },
   btnSolidLabel: {
+    ...ff,
     color: t.void,
     fontSize: 13,
     fontStyle: Text.FontStyleFlags.bold,
@@ -727,6 +864,7 @@ const styles = {
     marginRight: 10,
   },
   typeLabel: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -734,21 +872,163 @@ const styles = {
     marginBottom: 6,
   },
   typeBody: {
+    ...ff,
     color: t.inkSoft,
     fontSize: 12,
     lineSpacing: 1.45,
   },
   typeStrong: {
+    ...ff,
     color: t.ink,
     fontSize: 12,
     lineSpacing: 1.45,
   },
   typeItalic: {
+    ...ff,
     color: t.warn,
     fontSize: 12,
     lineSpacing: 1.45,
   },
+  typSectionLabel: {
+    ...ff,
+    color: t.accentMuted,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 2,
+    marginBottom: 10,
+  },
+  typCompareHint: {
+    ...ff,
+    color: t.inkFaint,
+    fontSize: 11,
+    lineSpacing: 1.45,
+    marginBottom: 12,
+  },
+  typCompareTag: {
+    ...ff,
+    color: t.accentMuted,
+    fontSize: 9,
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1,
+    marginBottom: 4,
+    marginTop: 10,
+  },
+  typCompareDefault: {
+    color: t.ink,
+    fontSize: 22,
+    lineSpacing: 1.25,
+    marginBottom: 2,
+  },
+  typCompareInter: {
+    ...ff,
+    color: t.ink,
+    fontSize: 22,
+    lineSpacing: 1.25,
+    marginBottom: 2,
+    "font-family": "Inter",
+  },
+  typCompareOutfit: {
+    ...ff,
+    color: t.ink,
+    fontSize: 22,
+    lineSpacing: 1.25,
+    marginBottom: 2,
+  },
+  typHero: {
+    ...ff,
+    color: t.ink,
+    fontSize: 26,
+    fontStyle: Text.FontStyleFlags.bold,
+    lineSpacing: 1.15,
+    marginBottom: 10,
+    "font-family": "Inter",
+  },
+  typLead: {
+    ...ff,
+    color: t.inkSoft,
+    fontSize: 14,
+    lineSpacing: 1.5,
+    marginBottom: 10,
+    "font-family": "Inter",
+  },
+  typCaption: {
+    ...ff,
+    color: t.inkFaint,
+    fontSize: 11,
+    lineSpacing: 1.4,
+    "font-family": "Inter",
+  },
+  typHeroOutfit: {
+    ...ff,
+    color: t.ink,
+    fontSize: 30,
+    fontStyle: Text.FontStyleFlags.bold,
+    lineSpacing: 1.15,
+    marginBottom: 10,
+  },
+  typLeadOutfit: {
+    ...ff,
+    color: t.inkSoft,
+    fontSize: 14,
+    lineSpacing: 1.5,
+    marginBottom: 10,
+  },
+  typCaptionOutfit: {
+    ...ff,
+    color: t.inkFaint,
+    fontSize: 11,
+    lineSpacing: 1.4,
+  },
+  typSpacer: {
+    height: 18,
+  },
+  typDefaultSans: {
+    color: t.inkSoft,
+    fontSize: 14,
+    lineSpacing: 1.45,
+  },
+  typBodyInter: {
+    ...ff,
+    color: t.inkSoft,
+    fontSize: 12,
+    lineSpacing: 1.45,
+    "font-family": "Inter",
+  },
+  typBoldInter: {
+    ...ff,
+    color: t.ink,
+    fontSize: 12,
+    lineSpacing: 1.45,
+    "font-family": "Inter",
+  },
+  typItalicInter: {
+    ...ff,
+    color: t.warn,
+    fontSize: 12,
+    lineSpacing: 1.45,
+    "font-family": "Inter",
+  },
+  typCanvasHint: {
+    ...ff,
+    color: t.inkFaint,
+    fontSize: 11,
+    marginBottom: 8,
+    lineSpacing: 1.4,
+  },
+  typographyCanvasShell: {
+    width: "100%",
+    backgroundColor: t.panelDeep,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: t.hairline,
+  },
+  typographyCanvasInner: {
+    width: "100%",
+    height: 72,
+    flexShrink: 0,
+  },
   fieldLabel: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -756,6 +1036,7 @@ const styles = {
     marginBottom: 6,
   },
   input: {
+    ...ff,
     width: "100%",
     minHeight: 40,
     color: t.ink,
@@ -776,6 +1057,7 @@ const styles = {
     "placeholder-color": t.inkFaint,
   },
   knobGalleryHint: {
+    ...ff,
     color: t.inkSoft,
     fontSize: 11,
     marginBottom: 12,
@@ -792,6 +1074,7 @@ const styles = {
     minWidth: 96,
   },
   knobTileLabel: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -822,6 +1105,7 @@ const styles = {
     minWidth: 100,
   },
   controlTag: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
@@ -862,6 +1146,7 @@ const styles = {
     backgroundColor: t.panelLift,
   },
   bypassLabel: {
+    ...ff,
     color: t.ink,
     fontSize: 13,
     fontStyle: Text.FontStyleFlags.bold,
@@ -909,22 +1194,26 @@ const styles = {
     marginRight: 8,
   },
   listIndexText: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 10,
     fontStyle: Text.FontStyleFlags.bold,
   },
   listText: {
+    ...ff,
     color: t.inkSoft,
     fontSize: 13,
     flex: 1,
   },
   listMeta: {
+    ...ff,
     color: t.accentMuted,
     fontSize: 9,
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1,
   },
   footer: {
+    ...ff,
     color: t.inkFaint,
     fontSize: 10,
     textAlign: "center",

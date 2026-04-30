@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "FontRegistry.h"
 #include "View.h"
 
 
@@ -44,10 +45,30 @@ namespace reactjuce
             const float fontHeight = fontProps.getWithDefault(fontSizeProp, 12.0f);
             const int textStyleFlags = fontProps.getWithDefault(fontStyleProp, 0);
 
-            juce::Font f (fontHeight);
+            juce::Font f(fontHeight);
 
             if (fontProps.contains(fontFamilyProp))
-                f = juce::Font (fontProps[fontFamilyProp], fontHeight, textStyleFlags);
+            {
+                const auto name =
+                    FontRegistry::normalizeFamilyString(fontProps[fontFamilyProp].toString());
+
+                if (auto tf = FontRegistry::getInstance().lookupTypeface(name))
+                {
+                    f = juce::Font(tf);
+                    f.setHeight(fontHeight);
+
+                    if ((textStyleFlags & juce::Font::bold) != 0)
+                        f.setBold(true);
+
+                    if ((textStyleFlags & juce::Font::italic) != 0)
+                        f.setItalic(true);
+                }
+                else
+                {
+                    if (name.isNotEmpty())
+                        f = juce::Font(name, fontHeight, textStyleFlags);
+                }
+            }
 
             f.setExtraKerningFactor(fontProps.getWithDefault(kerningFactorProp, 0.0));
             return f;

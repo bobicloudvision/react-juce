@@ -20,6 +20,7 @@
 
 #include "core/AppHarness.cpp"
 #include "core/EcmascriptEngine.cpp"
+#include "core/FontRegistry.cpp"
 
 #if JUCE_MODULE_AVAILABLE_juce_audio_processors
     #include "core/GenericEditor.cpp"

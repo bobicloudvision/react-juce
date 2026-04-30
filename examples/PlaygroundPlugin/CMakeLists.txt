@@ -9,6 +9,10 @@ juce_add_plugin(PlaygroundPlugin
 
 juce_generate_juce_header(PlaygroundPlugin)
 
+juce_add_binary_data(PlaygroundFonts SOURCES
+    fonts/Inter-Regular.ttf
+    fonts/Outfit-Regular.ttf)
+
 target_sources(PlaygroundPlugin PRIVATE PluginProcessor.cpp)
 
 target_include_directories(PlaygroundPlugin PRIVATE "${CMAKE_SOURCE_DIR}/react_juce")
@@ -21,6 +25,7 @@ target_compile_definitions(PlaygroundPlugin
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
 target_link_libraries(PlaygroundPlugin PRIVATE
+    PlaygroundFonts
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags

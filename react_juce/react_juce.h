@@ -46,6 +46,7 @@
 
 #include "core/ImageView.h"
 #include "core/FileWatcher.h"
+#include "core/FontRegistry.h"
 #include "core/RawTextView.h"
 #include "core/ReactApplicationRoot.h"
 #include "core/ScrollView.h"
