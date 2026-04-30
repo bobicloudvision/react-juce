@@ -109,6 +109,84 @@ namespace reactjuce
 
     //==============================================================================
 
+    TextInputView::TextInputView()
+        : textInput(props)
+    {
+        addAndMakeVisible(textInput);
+        textInput.addListener(&textInput);
+        textInput.setPopupMenuEnabled(false);
+        textInput.setIndents(0, 0);
+    }
+
+    void TextInputView::layoutTextEditorBounds()
+    {
+        textInput.setBounds(getTextInputContentBounds());
+    }
+
+    juce::Rectangle<int> TextInputView::getTextInputContentBounds()
+    {
+        auto b = getLocalBounds();
+        if (b.isEmpty())
+            return b;
+
+        const float refW = juce::jmax (1.0f, cachedFloatBounds.getWidth());
+
+        float pl = 0.0f, pt = 0.0f, pr = 0.0f, pb = 0.0f;
+
+        if (props.contains("padding"))
+        {
+            const float p = getResolvedLengthProperty("padding", refW);
+            pl = pt = pr = pb = p;
+        }
+
+        if (props.contains("paddingHorizontal") || props.contains("padding-horizontal"))
+        {
+            const float x = props.contains("paddingHorizontal")
+                ? getResolvedLengthProperty("paddingHorizontal", refW)
+                : getResolvedLengthProperty("padding-horizontal", refW);
+            pl = pr = x;
+        }
+
+        if (props.contains("paddingVertical") || props.contains("padding-vertical"))
+        {
+            const float x = props.contains("paddingVertical")
+                ? getResolvedLengthProperty("paddingVertical", refW)
+                : getResolvedLengthProperty("padding-vertical", refW);
+            pt = pb = x;
+        }
+
+        if (props.contains("paddingLeft") || props.contains("padding-left"))
+            pl = props.contains("paddingLeft")
+                ? getResolvedLengthProperty("paddingLeft", refW)
+                : getResolvedLengthProperty("padding-left", refW);
+
+        if (props.contains("paddingRight") || props.contains("padding-right"))
+            pr = props.contains("paddingRight")
+                ? getResolvedLengthProperty("paddingRight", refW)
+                : getResolvedLengthProperty("padding-right", refW);
+
+        if (props.contains("paddingTop") || props.contains("padding-top"))
+            pt = props.contains("paddingTop")
+                ? getResolvedLengthProperty("paddingTop", refW)
+                : getResolvedLengthProperty("padding-top", refW);
+
+        if (props.contains("paddingBottom") || props.contains("padding-bottom"))
+            pb = props.contains("paddingBottom")
+                ? getResolvedLengthProperty("paddingBottom", refW)
+                : getResolvedLengthProperty("padding-bottom", refW);
+
+        const int il = juce::roundToInt(pl);
+        const int it = juce::roundToInt(pt);
+        const int ir = juce::roundToInt(pr);
+        const int ib = juce::roundToInt(pb);
+
+        const int w = juce::jmax(0, b.getWidth() - il - ir);
+        const int h = juce::jmax(0, b.getHeight() - it - ib);
+        return { b.getX() + il, b.getY() + it, w, h };
+    }
+
+    //==============================================================================
+
     void TextInputView::setProperty(const juce::Identifier &name, const juce::var &value)
     {
         View::setProperty(name, value);
@@ -168,7 +246,7 @@ namespace reactjuce
     void TextInputView::resized()
     {
         View::resized();
-        textInput.setBounds(getLocalBounds());
+        layoutTextEditorBounds();
     }
 
     juce::Font TextInputView::getFont() const

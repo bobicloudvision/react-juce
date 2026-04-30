@@ -100,18 +100,15 @@ namespace reactjuce
         static const inline juce::Identifier onChangeProp = "onChange";
 
         //==============================================================================
-        TextInputView()
-            : textInput(props)
-        {
-            addAndMakeVisible(textInput);
-            textInput.addListener(&textInput);
-            textInput.setPopupMenuEnabled(false);
-        }
+        TextInputView();
         void setProperty(const juce::Identifier &name, const juce::var &value) override;
         void resized() override;
 
     private:
         //==============================================================================
+        void layoutTextEditorBounds();
+        juce::Rectangle<int> getTextInputContentBounds();
+
         juce::Font getFont() const;
         static bool isTextEditorColorProp(const juce::Identifier &textEditorColorProp);
         void setTextEditorColorProp(const juce::Identifier &textEditorColorProp, const juce::var &value);

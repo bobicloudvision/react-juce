@@ -89,12 +89,10 @@ namespace reactjuce
     {
         const auto& [view, shadow] = getViewHandle(viewId);
 
-        // ShadowView::setProperty returns true when a layout prop
-        // has been set.  Otherwise set on the view and repaint
-        if(!shadow->setProperty(name, value)) {
-          view->setProperty(name, value);
-          view->repaint();
-        }
+        const bool yogaHandledLayoutProp = shadow->setProperty(name, value);
+        view->setProperty(juce::Identifier(name), value);
+        if (! yogaHandledLayoutProp)
+            view->repaint();
     }
 
     void ViewManager::setRawTextValue(ViewId viewId, const juce::String& value)
