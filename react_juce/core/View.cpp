@@ -168,6 +168,10 @@ namespace reactjuce
 
     void View::paint (juce::Graphics& g)
     {
+        bool insetSolidBackgroundForBorder = false;
+        juce::Rectangle<float> insetSolidFillBounds;
+        float insetSolidCornerRadius = 0.0f;
+
         if (props.contains(borderPathProp))
         {
             juce::Path p = juce::Drawable::parseSVGPath(props[borderPathProp].toString());
@@ -205,6 +209,13 @@ namespace reactjuce
             g.setColour(c);
             g.strokePath(border, juce::PathStrokeType(borderWidth));
             g.reduceClipRegion(border);
+
+            /* Fill slightly inset so solid background sits against the inner edge of the stroke
+               (same idea as ComboBoxLookAndFeel when the View draws the frame). Avoids thick /
+               uneven corners on bordered Views such as <Button>. */
+            insetSolidBackgroundForBorder = true;
+            insetSolidFillBounds = getLocalBounds().toFloat().reduced(borderWidth);
+            insetSolidCornerRadius = juce::jmax(0.0f, borderRadius - borderWidth);
         }
 
         if (props.contains(backgroundColorProp))
@@ -214,7 +225,21 @@ namespace reactjuce
             if(const auto color (std::get_if<juce::Colour>(&colorVariant)); color)
             {
                 if (!color->isTransparent())
-                    g.fillAll(*color);
+                {
+                    g.setColour(*color);
+
+                    if (insetSolidBackgroundForBorder && ! insetSolidFillBounds.isEmpty())
+                    {
+                        if (insetSolidCornerRadius > 0.5f)
+                            g.fillRoundedRectangle(insetSolidFillBounds, insetSolidCornerRadius);
+                        else
+                            g.fillRect(insetSolidFillBounds.toNearestInt());
+                    }
+                    else
+                    {
+                        g.fillAll(*color);
+                    }
+                }
             }
             else if(const auto gradient (std::get_if<juce::ColourGradient>(&colorVariant)); gradient)
             {
