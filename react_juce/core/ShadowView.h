@@ -1,10 +1,18 @@
 #pragma once
 
 #include "View.h"
-
+#include <vector>
 
 namespace reactjuce
 {
+    class ShadowView;
+
+    /** Internal layout helpers (see ShadowView_Yoga.cpp). */
+    namespace layout_detail
+    {
+        void expandViewBoundsForOutOfFlowChildren (View* view, const std::vector<ShadowView*>& children);
+    }
+
 
     //==============================================================================
     struct BoundsAnimator : public juce::Timer
@@ -141,6 +149,11 @@ namespace reactjuce
          *  an animation of a component subtree by just marking the parent as animated.
          */
         virtual void flushViewLayoutAnimated(double durationMs, int frameRate, BoundsAnimator::EasingType et);
+
+        /** CSS-style stacking: reorder native subcomponents by `z-index` / `zIndex` style (higher = on top). */
+        void applyZOrderToSubtree();
+
+        float getZIndex() const;
 
     protected:
         //==============================================================================

@@ -12,6 +12,7 @@ import {
   View,
 } from "react-juce";
 import Label from "./Label";
+import Dropdown from "./Dropdown";
 import Modal, { ModalPrimaryButton } from "./Modal";
 import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
@@ -33,6 +34,13 @@ const LIST_DATA = Array.from({ length: 120 }, (_, i) => ({
   id: i,
   label: `Row ${String(i + 1).padStart(3, "0")}`,
 }));
+
+const PRESET_OPTIONS = [
+  { value: "clean", label: "Clean headroom" },
+  { value: "warm", label: "Warm mid push" },
+  { value: "aggro", label: "Aggressive squeeze" },
+  { value: "bypass", label: "Dry bypass chain" },
+];
 
 /** Example categories — add new tabs here and render the matching block in `App`. */
 const EXAMPLE_TABS = [
@@ -183,6 +191,7 @@ export default function App() {
   const [inputValue, setInputValue] = useState("Signal chain · rename me");
   const [clicks, setClicks] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [preset, setPreset] = useState("clean");
   const [tickPhase, setTickPhase] = useState(0);
   const [lastEvent, setLastEvent] = useState("—");
   const [canvasSize, setCanvasSize] = useState({ width: 640, height: 72 });
@@ -474,7 +483,7 @@ export default function App() {
             <Panel
               label="INPUT"
               title="Controls & copy"
-              hint="Buttons and TextInput."
+              hint="Buttons, TextInput, inline dropdown (toggle field or pick a row)."
             >
               <View {...styles.actionRow}>
                 <Button
@@ -500,6 +509,14 @@ export default function App() {
                 onInput={(e) => setInputValue(e.value)}
                 placeholder="Patch name"
                 {...styles.input}
+              />
+
+              <Text {...styles.fieldLabelAfterBlock}>DROPDOWN</Text>
+              <Dropdown
+                options={PRESET_OPTIONS}
+                value={preset}
+                onChange={setPreset}
+                placeholder="Choose preset…"
               />
             </Panel>
           ) : null}
@@ -1056,6 +1073,15 @@ const styles = {
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
     marginBottom: 6,
+  },
+  fieldLabelAfterBlock: {
+    ...ff,
+    color: t.inkFaint,
+    fontSize: fs(9),
+    fontStyle: Text.FontStyleFlags.bold,
+    letterSpacing: 1.4,
+    marginBottom: 6,
+    marginTop: 14,
   },
   modalBody: {
     ...ff,

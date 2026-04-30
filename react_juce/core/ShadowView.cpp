@@ -72,5 +72,24 @@ namespace reactjuce
     ShadowView::ShadowViewPimpl& ShadowView::getShadowViewImpl() { return *shadowViewPimpl; }
 
     //==============================================================================
+    float ShadowView::getZIndex() const
+    {
+        const auto& p = shadowViewPimpl->props;
+
+        juce::var z = p["z-index"];
+
+        if (z.isVoid() || z.isUndefined())
+            z = p["zIndex"];
+
+        if (z.isDouble() || z.isInt() || z.isInt64())
+            return static_cast<float> (z);
+
+        if (z.isString())
+            return z.toString().getFloatValue();
+
+        return 0.f;
+    }
+
+    //==============================================================================
 
 }

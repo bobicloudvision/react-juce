@@ -214,6 +214,7 @@ namespace reactjuce
 
         root->computeViewLayout(width, height);
         root->flushViewLayout();
+        root->applyZOrderToSubtree();
     }
 
     void ViewManager::clearViewTables()

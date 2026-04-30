@@ -1,6 +1,8 @@
 #include "ShadowView.h"
 #include "YogaImplInclude.cpp"
 
+#include <algorithm>
+
 
 //==============================================================================
 #define BP_SPREAD_SETTER_PERCENT(setter) setter, setter##Percent
@@ -10,6 +12,32 @@
 
 namespace reactjuce
 {
+    void layout_detail::expandViewBoundsForOutOfFlowChildren (View* view,
+                                                             const std::vector<ShadowView*>& children)
+    {
+        if (view == nullptr || children.empty())
+            return;
+
+        auto localUnion = juce::Rectangle<int> (0, 0, view->getWidth(), view->getHeight());
+
+        for (auto* sv : children)
+            if (sv != nullptr)
+                if (auto* cv = sv->getAssociatedView())
+                    localUnion = localUnion.getUnion (cv->getBounds());
+
+        const auto b = view->getBounds();
+
+        const int nw = juce::jmax (b.getWidth(), localUnion.getWidth());
+        const int nh = juce::jmax (b.getHeight(), localUnion.getHeight());
+
+        if (nw == b.getWidth() && nh == b.getHeight())
+            return;
+
+        const auto nb = b.withSize (nw, nh);
+        view->setBounds (nb);
+        view->setFloatBounds (nb.toFloat());
+    }
+
     namespace
     {
         //==============================================================================
@@ -206,6 +234,10 @@ namespace reactjuce
         bool setProperty (const juce::String& name, const juce::var& newValue)
         {
             props.set(name, newValue);
+
+            if (name == "z-index" || name == "zIndex")
+                return true;
+
             return propertySetters.call(name, newValue, yogaNode);
         }
 
@@ -289,6 +321,8 @@ namespace reactjuce
 
             for (auto& child : children)
                 child->flushViewLayout();
+
+            layout_detail::expandViewBoundsForOutOfFlowChildren (view, children);
         }
 
         void flushViewLayoutAnimated(double const durationMs, int const frameRate, BoundsAnimator::EasingType const et)
@@ -327,6 +361,72 @@ namespace reactjuce
 
         //==============================================================================
     };
+
+    namespace
+    {
+        /** Re-add direct View children in ascending z-index so later siblings paint/hit-test on top. */
+        void sortDirectChildViewsByZIndex (View* parentView, const std::vector<ShadowView*>& children)
+        {
+            if (parentView == nullptr || children.empty())
+                return;
+
+            for (auto* sv : children)
+            {
+                if (sv == nullptr)
+                    continue;
+
+                if (auto* cv = sv->getAssociatedView())
+                    if (cv->getParentComponent() != parentView)
+                        return;
+            }
+
+            struct Row
+            {
+                ShadowView* sv = nullptr;
+                size_t      index = 0;
+                float       z = 0.f;
+            };
+
+            std::vector<Row> rows;
+            rows.reserve (children.size());
+
+            for (size_t i = 0; i < children.size(); ++i)
+            {
+                auto* sv = children[i];
+
+                if (sv == nullptr)
+                    continue;
+
+                rows.push_back ({ sv, i, sv->getZIndex() });
+            }
+
+            std::stable_sort (rows.begin(), rows.end(), [] (const Row& a, const Row& b) {
+                return a.z < b.z;
+            });
+
+            for (const auto& row : rows)
+                if (auto* v = row.sv->getAssociatedView())
+                    parentView->removeChildComponent (v);
+
+            for (const auto& row : rows)
+                if (auto* v = row.sv->getAssociatedView())
+                    parentView->addAndMakeVisible (v);
+        }
+    } // namespace
+
+    void ShadowView::applyZOrderToSubtree()
+    {
+        if (auto* pv = getAssociatedView())
+        {
+            auto& ch = getChildren();
+
+            if (! ch.empty())
+                sortDirectChildViewsByZIndex (pv, ch);
+        }
+
+        for (auto* c : getChildren())
+            c->applyZOrderToSubtree();
+    }
 
     //==============================================================================
 }

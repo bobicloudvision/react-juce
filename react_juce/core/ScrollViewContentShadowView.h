@@ -46,6 +46,8 @@ namespace reactjuce
 
             for (auto& child : getChildren())
                 child->flushViewLayout();
+
+            layout_detail::expandViewBoundsForOutOfFlowChildren (v, getChildren());
         }
 
     private:
