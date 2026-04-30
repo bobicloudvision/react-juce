@@ -14,7 +14,7 @@
     "dist/lib",
     "dist/components"
   ],
-  "author": "Nick Thompson",
+  "author": "Bozhidar Slaveykov",
   "devDependencies": {
     "@babel/cli": "^7.10.0",
     "@babel/core": "^7.11.1",
