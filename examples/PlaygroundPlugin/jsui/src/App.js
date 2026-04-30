@@ -12,6 +12,7 @@ import {
   View,
 } from "react-juce";
 import Label from "./Label";
+import Modal, { ModalPrimaryButton } from "./Modal";
 import ParameterSlider from "./ParameterSlider";
 import ParameterToggleButton from "./ParameterToggleButton";
 import {
@@ -181,6 +182,7 @@ export default function App() {
   const [activeExampleTab, setActiveExampleTab] = useState(EXAMPLE_TABS[0].id);
   const [inputValue, setInputValue] = useState("Signal chain · rename me");
   const [clicks, setClicks] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
   const [tickPhase, setTickPhase] = useState(0);
   const [lastEvent, setLastEvent] = useState("—");
   const [canvasSize, setCanvasSize] = useState({ width: 640, height: 72 });
@@ -486,6 +488,12 @@ export default function App() {
                 </Button>
               </View>
 
+              <View {...styles.actionRow}>
+                <Button {...styles.btnGhost} onClick={() => setModalOpen(true)}>
+                  <Text {...styles.btnGhostLabel}>Open modal</Text>
+                </Button>
+              </View>
+
               <Text {...styles.fieldLabel}>TEXT INPUT</Text>
               <TextInput
                 value={inputValue}
@@ -539,6 +547,18 @@ export default function App() {
           <View {...styles.footerSpacer} />
         </ScrollView.ContentView>
       </ScrollView>
+
+      <Modal
+        open={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+        title="Sample modal"
+      >
+        <Text {...styles.modalBody}>
+          Scrim and panel are plain Views: absolute fill, then a centered card.
+          Click outside or use Close.
+        </Text>
+        <ModalPrimaryButton label="Close" onPress={() => setModalOpen(false)} />
+      </Modal>
     </View>
   );
 }
@@ -1036,6 +1056,12 @@ const styles = {
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
     marginBottom: 6,
+  },
+  modalBody: {
+    ...ff,
+    color: t.inkSoft,
+    fontSize: fs(13),
+    lineSpacing: 1.45,
   },
   input: {
     ...ff,

@@ -22,6 +22,8 @@ const base = {
   warn: "#fbbf24",
   danger: "#f87171",
   inputSelection: "#1e3d52",
+  /** ARGB — dimmed overlay for `<Modal>`. */
+  scrim: "#c005070d",
 };
 
 /** Spread onto `<Text>` / `<TextInput>` styles — Outfit is bundled via FontRegistry in the plugin. */
