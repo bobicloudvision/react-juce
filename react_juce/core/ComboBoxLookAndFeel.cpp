@@ -192,23 +192,54 @@ namespace reactjuce
                                             int, int, int, int, juce::ComboBox& box)
     {
         const float corner = getComboCornerSize (width, height);
-        const auto boxBounds = juce::Rectangle<float> (0.0f, 0.0f, (float) width, (float) height);
+        const auto  boxBounds = juce::Rectangle<float> (0.0f, 0.0f, (float) width, (float) height);
+
+        /* Parent ComboBoxView already strokes border-radius + border-width in View::paint.
+           Drawing the same outline again here stacks two strokes and corners look wrong.
+           Inset the fill so it clears the inner half of that stroke and skip the extra outline. */
+        const bool viewStrokesBorder = owner.props.contains (View::borderColorProp)
+                                       && owner.props.contains (View::borderWidthProp);
+
+        float borderInset = 0.0f;
+
+        if (viewStrokesBorder)
+            borderInset = owner.getResolvedLengthProperty (View::borderWidthProp.toString(),
+                                                           (float) juce::jmin (width, height));
+
+        const auto  fillBounds = boxBounds.reduced (borderInset);
+        const float fillCorner = viewStrokesBorder
+                                     ? juce::jmax (0.0f, corner - borderInset)
+                                     : corner;
 
         g.setColour (box.findColour (juce::ComboBox::backgroundColourId));
-        g.fillRoundedRectangle (boxBounds, corner);
 
-        float lineW = 1.0f;
-        static const juce::Identifier outlineWidthProp ("outline-width");
+        if (! fillBounds.isEmpty())
+        {
+            if (fillCorner > 0.5f)
+                g.fillRoundedRectangle (fillBounds, fillCorner);
+            else
+                g.fillRect (fillBounds);
+        }
 
-        if (owner.props.contains (outlineWidthProp))
-            lineW = juce::jmax (0.5f, static_cast<float> (owner.props[outlineWidthProp]));
-        else if (owner.props.contains (View::borderWidthProp))
-            lineW = juce::jmax (0.5f,
-                                owner.getResolvedLengthProperty (View::borderWidthProp.toString(),
-                                                                 (float) juce::jmin (width, height)));
+        if (! viewStrokesBorder)
+        {
+            float lineW = 1.0f;
+            static const juce::Identifier outlineWidthProp ("outline-width");
 
-        g.setColour (box.findColour (juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle (boxBounds.reduced (0.5f, 0.5f), corner, lineW);
+            if (owner.props.contains (outlineWidthProp))
+                lineW = juce::jmax (0.5f, static_cast<float> (owner.props[outlineWidthProp]));
+            else if (owner.props.contains (View::borderWidthProp))
+                lineW = juce::jmax (0.5f,
+                                    owner.getResolvedLengthProperty (View::borderWidthProp.toString(),
+                                                                     (float) juce::jmin (width, height)));
+
+            g.setColour (box.findColour (juce::ComboBox::outlineColourId));
+
+            if (corner > 0.5f)
+                g.drawRoundedRectangle (boxBounds.reduced (0.5f, 0.5f), corner, lineW);
+            else
+                g.drawRect (boxBounds.toNearestInt(), juce::roundToInt (lineW));
+        }
 
         juce::Rectangle<int> arrowZone (width - 30, 0, 20, height);
         juce::Path path;
