@@ -14,6 +14,8 @@
 examples/TestRunner/Builds
 examples/**/build
 
+ext/juce/extras/BLOCKS/standalone_sdk/SDK/Build/
+
 # For VSCode users
 *.code-workspace
 
