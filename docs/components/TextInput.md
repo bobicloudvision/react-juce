@@ -13,7 +13,7 @@ the string supplied by that `value` prop.
 ```js
 import React, { Component } from "react";
 
-import { Text, TextInput, View } from "react-juce";
+import { Text, TextInput, View } from "@bobicloudvision/react-juce";
 
 class App extends Component {
   constructor(props) {

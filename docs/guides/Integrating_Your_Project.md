@@ -10,7 +10,7 @@ easy with the JUCE module format, and React-JUCE abides by that format. Follow a
 
 ## Template Generator
 
-Next, the first thing we want to do here is write some React.js, so let's start with a "Hello World!" of our own. React-JUCE's `react-juce` npm package carries a template generator that you can use to boostrap a React application for your project. For this step, let's assume your JUCE project directory is at `~/MyProject`, the source files are at `~/MyProject/Source`, and we want to put the React application source at `~/MyProject/Source/jsui` (note, you can put this wherever you want). Now, to use the template generator, we start again at the root of the React-JUCE git repository:
+Next, the first thing we want to do here is write some React.js, so let's start with a "Hello World!" of our own. React-JUCE's `@bobicloudvision/react-juce` npm package carries a template generator that you can use to boostrap a React application for your project. For this step, let's assume your JUCE project directory is at `~/MyProject`, the source files are at `~/MyProject/Source`, and we want to put the React application source at `~/MyProject/Source/jsui` (note, you can put this wherever you want). Now, to use the template generator, we start again at the root of the React-JUCE git repository:
 
 ```bash
 $ pwd

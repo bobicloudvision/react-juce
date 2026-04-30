@@ -1,9 +1,9 @@
 import React from "react";
 import ParameterSlider from "./ParameterSlider";
-import { Slider } from "react-juce";
+import { Slider } from "@bobicloudvision/react-juce";
 import Label from "./Label";
 import { useParameter } from "./ParameterValueContext";
-import { View } from "react-juce";
+import { View } from "@bobicloudvision/react-juce";
 
 const sliderFillColor = "#66FDCF";
 const sliderTrackColor = "#626262";

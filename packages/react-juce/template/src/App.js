@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text } from "react-juce";
+import { View, Text } from "@bobicloudvision/react-juce";
 
 class App extends Component {
   render() {

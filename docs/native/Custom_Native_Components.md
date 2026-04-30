@@ -28,7 +28,7 @@ Register **before** `evaluate` / `evaluateFile` on that `ReactApplicationRoot` s
 
 ## JavaScript
 
-Use the **same string** as the native `typeId` as your host component. With the `react-juce` npm package, host components are created through the reconciler; your tag name must match what you passed to `registerViewType` (e.g. `"MyWidget"`).
+Use the **same string** as the native `typeId` as your host component. With the `@bobicloudvision/react-juce` npm package, host components are created through the reconciler; your tag name must match what you passed to `registerViewType` (e.g. `"MyWidget"`).
 
 ## Native methods and refs
 

@@ -9,7 +9,7 @@ The example below demonstrates displaying a local image file, and a data url.
 
 ```js
 import React, { Component } from "react";
-import { View, Image } from "react-juce";
+import { View, Image } from "@bobicloudvision/react-juce";
 
 // Using a bundling tool like Webpack or Rollup, we can configure this import
 // to read the image file from disk at the time of bundling, and embed the data

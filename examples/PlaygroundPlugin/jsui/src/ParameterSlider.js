@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Slider } from "react-juce";
+import { Slider } from "@bobicloudvision/react-juce";
 import {
   beginParameterChangeGesture,
   endParameterChangeGesture,

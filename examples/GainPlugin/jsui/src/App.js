@@ -3,7 +3,7 @@ import Meter from "./Meter";
 import Knob from "./Knob";
 import ParameterToggleButton from "./ParameterToggleButton";
 import React, { Component } from "react";
-import { Canvas, Image, Text, View } from "react-juce";
+import { Canvas, Image, Text, View } from "@bobicloudvision/react-juce";
 
 function animatedDraw(ctx) {
   let now = Date.now() / 10;

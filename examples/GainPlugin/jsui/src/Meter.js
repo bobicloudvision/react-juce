@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { EventBridge, Image, Text, View } from "react-juce";
+import { EventBridge, Image, Text, View } from "@bobicloudvision/react-juce";
 
 class Meter extends Component {
   constructor(props) {

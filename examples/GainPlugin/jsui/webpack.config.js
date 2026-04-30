@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 const nestedNodeModules = path.join(
   __dirname,
-  "node_modules/react-juce/node_modules"
+  "node_modules/@bobicloudvision/react-juce/node_modules"
 );
 const reactJuceSrc = path.join(
   __dirname,
@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
       alias: {
         // One webpack pass from source — rebundling dist/ nests __webpack_require__
         // and triggers harmony/CJS conflicts in Duktape.
-        "react-juce": reactJuceSrc,
+        "@bobicloudvision/react-juce": reactJuceSrc,
         ...(useDuktapeSafeReact
           ? {
               react: path.join(

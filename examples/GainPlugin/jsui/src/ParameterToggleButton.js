@@ -1,6 +1,6 @@
 import ParameterValueStore from "./ParameterValueStore";
 import React, { Component } from "react";
-import { Button } from "react-juce";
+import { Button } from "@bobicloudvision/react-juce";
 import {
   beginParameterChangeGesture,
   endParameterChangeGesture,

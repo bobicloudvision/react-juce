@@ -9,7 +9,7 @@ The most fundamental of the core React-JUCE components, `View` is a container th
 
 ```js
 import React, { Component } from "react";
-import { View } from "react-juce";
+import { View } from "@bobicloudvision/react-juce";
 
 function App(props) {
   return (

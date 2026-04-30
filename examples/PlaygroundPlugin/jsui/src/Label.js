@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Text, View } from "react-juce";
+import { Text, View } from "@bobicloudvision/react-juce";
 import { fs, theme } from "./theme";
 
 const Label = ({ value, ...props }) => {

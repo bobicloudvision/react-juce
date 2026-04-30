@@ -10,7 +10,7 @@ and a set of default drawing operations to render common slider representations.
 
 ```js
 import React, { Component } from "react";
-import { View, Slider, Text } from "react-juce";
+import { View, Slider, Text } from "@bobicloudvision/react-juce";
 
 function App(props) {
   return (

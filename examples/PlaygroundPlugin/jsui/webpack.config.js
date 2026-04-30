@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 const nestedNodeModules = path.join(
   __dirname,
-  "node_modules/react-juce/node_modules"
+  "node_modules/@bobicloudvision/react-juce/node_modules"
 );
 const reactJuceSrc = path.join(
   __dirname,
@@ -45,7 +45,7 @@ module.exports = (env, argv) => {
       alias: {
         // Pin one core-js tree (avoids broken resolution of core-js/es6/*.js on some installs).
         "core-js": path.join(__dirname, "node_modules/core-js"),
-        "react-juce": reactJuceSrc,
+        "@bobicloudvision/react-juce": reactJuceSrc,
         ...(useDuktapeSafeReact
           ? {
               react: path.join(

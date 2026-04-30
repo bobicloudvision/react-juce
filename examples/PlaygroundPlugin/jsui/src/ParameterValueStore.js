@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { EventBridge } from "react-juce";
+import { EventBridge } from "@bobicloudvision/react-juce";
 
 class ParameterValueStore extends EventEmitter {
   constructor() {

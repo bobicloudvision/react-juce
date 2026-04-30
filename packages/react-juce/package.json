@@ -1,6 +1,9 @@
 {
-  "name": "react-juce",
+  "name": "@bobicloudvision/react-juce",
   "version": "0.3.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Write cross-platform native apps with React.js and JUCE.",
   "repository": {
     "type": "git",

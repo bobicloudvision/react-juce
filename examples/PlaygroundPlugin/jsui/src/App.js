@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
   View,
-} from "react-juce";
+} from "@bobicloudvision/react-juce";
 import Label from "./Label";
 import Modal, { ModalPrimaryButton } from "./Modal";
 import ParameterSlider from "./ParameterSlider";

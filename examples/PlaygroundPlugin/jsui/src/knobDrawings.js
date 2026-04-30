@@ -1,4 +1,4 @@
-import { Slider } from "react-juce";
+import { Slider } from "@bobicloudvision/react-juce";
 
 function fitRadius(w, h, strokeReserve = 8) {
   const side = Math.min(w, h);

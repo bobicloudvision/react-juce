@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { EventBridge } from "react-juce";
+import { EventBridge } from "@bobicloudvision/react-juce";
 
 /** This is more or less a proxy to the EventBridge's parameter events that
  *  caches last known values and provides components a way to access the

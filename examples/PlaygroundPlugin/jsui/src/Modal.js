@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Button, Text, View } from "react-juce";
+import { Button, Text, View } from "@bobicloudvision/react-juce";
 import { fs, theme as t } from "./theme";
 
 const ff = t.fontFace;

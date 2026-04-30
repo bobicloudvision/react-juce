@@ -7,7 +7,7 @@ event interactions.
 
 ```js
 import React, { Component } from "react";
-import { View, Button, Text } from "react-juce";
+import { View, Button, Text } from "@bobicloudvision/react-juce";
 
 function App(props) {
   return (

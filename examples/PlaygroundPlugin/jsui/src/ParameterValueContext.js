@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
-import { EventBridge } from "react-juce";
+import { EventBridge } from "@bobicloudvision/react-juce";
 
 export const ParamIds = {
   DemoGain: "DemoGain",
