@@ -27,6 +27,11 @@ const base = {
 /** Spread onto `<Text>` / `<TextInput>` styles — Outfit is bundled via FontRegistry in the plugin. */
 const outfit = Object.freeze({ "font-family": "Outfit" });
 
+/** Legacy px → scaled size (~1.5×) for Playground readability. */
+export function fs(px) {
+  return Math.round(px * 1.5);
+}
+
 export const theme = Object.freeze({
   ...base,
   bg: `linear-gradient(168deg, ${base.stone140} 0%, ${base.stone0b} 42%, ${base.stone101} 100%)`,

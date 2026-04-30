@@ -23,7 +23,7 @@ import {
   tickedArcDraw,
 } from "./knobDrawings";
 import { ParamIds, useParameter } from "./ParameterValueContext";
-import { theme as t } from "./theme";
+import { fs, theme as t } from "./theme";
 
 /** Default UI typeface (Outfit) — spread onto text styles; typography demos override for Inter / default sans. */
 const ff = t.fontFace;
@@ -260,16 +260,18 @@ export default function App() {
       ctx.strokeStyle = t.hairline;
       ctx.lineWidth = 1;
       ctx.strokeRect(0, 0, w, h);
+      const pxBody = fs(13);
+      const pxCaption = fs(11);
       const y1 = Math.min(18, h * 0.28);
       const y2 = Math.min(34, h * 0.52);
       const y3 = Math.min(50, h * 0.76);
-      ctx.font = "13px Inter";
+      ctx.font = `${pxBody}px Inter`;
       ctx.fillStyle = t.accentGlow;
-      ctx.fillText("Inter — 13px canvas (FontRegistry)", 12, y1);
-      ctx.font = "13px Outfit";
+      ctx.fillText(`Inter — ${pxBody}px canvas (FontRegistry)`, 12, y1);
+      ctx.font = `${pxBody}px Outfit`;
       ctx.fillStyle = t.accent;
-      ctx.fillText("Outfit — 13px canvas (FontRegistry)", 12, y2);
-      ctx.font = "11px Inter";
+      ctx.fillText(`Outfit — ${pxBody}px canvas (FontRegistry)`, 12, y2);
+      ctx.font = `${pxCaption}px Inter`;
       ctx.fillStyle = t.inkSoft;
       ctx.fillText(
         "Same registry as <Text font-family Inter | Outfit>",
@@ -586,7 +588,7 @@ const styles = {
   markText: {
     ...ff,
     color: t.void,
-    fontSize: 13,
+    fontSize: fs(13),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 0.5,
   },
@@ -596,14 +598,14 @@ const styles = {
   chromeTitle: {
     ...ff,
     color: t.ink,
-    fontSize: 22,
+    fontSize: fs(22),
     fontStyle: Text.FontStyleFlags.bold,
     lineSpacing: 1.1,
   },
   chromeSub: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 12,
+    fontSize: fs(12),
     marginTop: 3,
     lineSpacing: 1.4,
   },
@@ -620,7 +622,7 @@ const styles = {
   chipText: {
     ...ff,
     color: t.accentGlow,
-    fontSize: 10,
+    fontSize: fs(10),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 2,
   },
@@ -637,7 +639,7 @@ const styles = {
   telemetryLabel: {
     ...ff,
     color: t.accentMuted,
-    fontSize: 10,
+    fontSize: fs(10),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.6,
     marginRight: 12,
@@ -646,7 +648,7 @@ const styles = {
   telemetryValue: {
     ...ff,
     color: t.accentGlow,
-    fontSize: 12,
+    fontSize: fs(12),
     flex: 1,
     fontStyle: Text.FontStyleFlags.bold,
   },
@@ -660,7 +662,7 @@ const styles = {
   tabBarKicker: {
     ...ff,
     color: t.accentMuted,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 2,
     marginBottom: 10,
@@ -703,13 +705,13 @@ const styles = {
   tabLabel: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 12,
+    fontSize: fs(12),
     fontStyle: Text.FontStyleFlags.bold,
   },
   tabLabelOn: {
     ...ff,
     color: t.accentGlow,
-    fontSize: 12,
+    fontSize: fs(12),
     fontStyle: Text.FontStyleFlags.bold,
   },
   panel: {
@@ -729,7 +731,7 @@ const styles = {
   panelKicker: {
     ...ff,
     color: t.accent,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 2,
     marginRight: 14,
@@ -743,14 +745,14 @@ const styles = {
   panelTitle: {
     ...ff,
     color: t.ink,
-    fontSize: 16,
+    fontSize: fs(16),
     fontStyle: Text.FontStyleFlags.bold,
     marginBottom: 4,
   },
   panelHint: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
   },
   panelHairline: {
@@ -782,7 +784,7 @@ const styles = {
   splitCaption: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 10,
+    fontSize: fs(10),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1,
     marginBottom: 6,
@@ -836,7 +838,7 @@ const styles = {
   btnGhostLabel: {
     ...ff,
     color: t.accentGlow,
-    fontSize: 13,
+    fontSize: fs(13),
     fontStyle: Text.FontStyleFlags.bold,
   },
   btnSolid: {
@@ -851,7 +853,7 @@ const styles = {
   btnSolidLabel: {
     ...ff,
     color: t.void,
-    fontSize: 13,
+    fontSize: fs(13),
     fontStyle: Text.FontStyleFlags.bold,
   },
   typeRow: {
@@ -866,7 +868,7 @@ const styles = {
   typeLabel: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.2,
     marginBottom: 6,
@@ -874,25 +876,25 @@ const styles = {
   typeBody: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
   },
   typeStrong: {
     ...ff,
     color: t.ink,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
   },
   typeItalic: {
     ...ff,
     color: t.warn,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
   },
   typSectionLabel: {
     ...ff,
     color: t.accentMuted,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 2,
     marginBottom: 10,
@@ -900,14 +902,14 @@ const styles = {
   typCompareHint: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 11,
+    fontSize: fs(11),
     lineSpacing: 1.45,
     marginBottom: 12,
   },
   typCompareTag: {
     ...ff,
     color: t.accentMuted,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1,
     marginBottom: 4,
@@ -915,14 +917,14 @@ const styles = {
   },
   typCompareDefault: {
     color: t.ink,
-    fontSize: 22,
+    fontSize: fs(22),
     lineSpacing: 1.25,
     marginBottom: 2,
   },
   typCompareInter: {
     ...ff,
     color: t.ink,
-    fontSize: 22,
+    fontSize: fs(22),
     lineSpacing: 1.25,
     marginBottom: 2,
     "font-family": "Inter",
@@ -930,14 +932,14 @@ const styles = {
   typCompareOutfit: {
     ...ff,
     color: t.ink,
-    fontSize: 22,
+    fontSize: fs(22),
     lineSpacing: 1.25,
     marginBottom: 2,
   },
   typHero: {
     ...ff,
     color: t.ink,
-    fontSize: 26,
+    fontSize: fs(26),
     fontStyle: Text.FontStyleFlags.bold,
     lineSpacing: 1.15,
     marginBottom: 10,
@@ -946,7 +948,7 @@ const styles = {
   typLead: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 14,
+    fontSize: fs(14),
     lineSpacing: 1.5,
     marginBottom: 10,
     "font-family": "Inter",
@@ -954,14 +956,14 @@ const styles = {
   typCaption: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 11,
+    fontSize: fs(11),
     lineSpacing: 1.4,
     "font-family": "Inter",
   },
   typHeroOutfit: {
     ...ff,
     color: t.ink,
-    fontSize: 30,
+    fontSize: fs(30),
     fontStyle: Text.FontStyleFlags.bold,
     lineSpacing: 1.15,
     marginBottom: 10,
@@ -969,14 +971,14 @@ const styles = {
   typLeadOutfit: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 14,
+    fontSize: fs(14),
     lineSpacing: 1.5,
     marginBottom: 10,
   },
   typCaptionOutfit: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 11,
+    fontSize: fs(11),
     lineSpacing: 1.4,
   },
   typSpacer: {
@@ -984,34 +986,34 @@ const styles = {
   },
   typDefaultSans: {
     color: t.inkSoft,
-    fontSize: 14,
+    fontSize: fs(14),
     lineSpacing: 1.45,
   },
   typBodyInter: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
     "font-family": "Inter",
   },
   typBoldInter: {
     ...ff,
     color: t.ink,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
     "font-family": "Inter",
   },
   typItalicInter: {
     ...ff,
     color: t.warn,
-    fontSize: 12,
+    fontSize: fs(12),
     lineSpacing: 1.45,
     "font-family": "Inter",
   },
   typCanvasHint: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 11,
+    fontSize: fs(11),
     marginBottom: 8,
     lineSpacing: 1.4,
   },
@@ -1030,7 +1032,7 @@ const styles = {
   fieldLabel: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
     marginBottom: 6,
@@ -1040,7 +1042,7 @@ const styles = {
     width: "100%",
     minHeight: 40,
     color: t.ink,
-    fontSize: 13,
+    fontSize: fs(13),
     backgroundColor: t.panelDeep,
     borderRadius: 8,
     borderWidth: 1,
@@ -1059,7 +1061,7 @@ const styles = {
   knobGalleryHint: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 11,
+    fontSize: fs(11),
     marginBottom: 12,
   },
   knobGalleryRow: {
@@ -1076,7 +1078,7 @@ const styles = {
   knobTileLabel: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 0.6,
     marginBottom: 6,
@@ -1107,7 +1109,7 @@ const styles = {
   controlTag: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1.4,
     marginBottom: 6,
@@ -1148,7 +1150,7 @@ const styles = {
   bypassLabel: {
     ...ff,
     color: t.ink,
-    fontSize: 13,
+    fontSize: fs(13),
     fontStyle: Text.FontStyleFlags.bold,
   },
   listView: {
@@ -1196,26 +1198,26 @@ const styles = {
   listIndexText: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 10,
+    fontSize: fs(10),
     fontStyle: Text.FontStyleFlags.bold,
   },
   listText: {
     ...ff,
     color: t.inkSoft,
-    fontSize: 13,
+    fontSize: fs(13),
     flex: 1,
   },
   listMeta: {
     ...ff,
     color: t.accentMuted,
-    fontSize: 9,
+    fontSize: fs(9),
     fontStyle: Text.FontStyleFlags.bold,
     letterSpacing: 1,
   },
   footer: {
     ...ff,
     color: t.inkFaint,
-    fontSize: 10,
+    fontSize: fs(10),
     textAlign: "center",
     marginTop: 8,
   },

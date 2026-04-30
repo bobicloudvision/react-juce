@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Text, View } from "react-juce";
-import { theme } from "./theme";
+import { fs, theme } from "./theme";
 
 const Label = ({ value, ...props }) => {
   return (
@@ -14,7 +14,7 @@ const styles = {
   labelText: {
     ...theme.fontFace,
     color: theme.ink,
-    fontSize: 14.0,
+    fontSize: fs(14),
     lineSpacing: 1.4,
     fontStyle: Text.FontStyleFlags.bold,
   },
